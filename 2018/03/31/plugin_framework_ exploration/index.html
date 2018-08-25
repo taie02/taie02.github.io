@@ -1,0 +1,64 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 插件化方案对比 · dim's blog</title><meta name="description" content="插件化方案对比 - Dim"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://dim.red/atom.xml" title="dim's blog"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">博客</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">文章</a></li><li class="nav-list-item"><a href="/about/" target="_self" class="nav-list-link">关于</a></li><li class="nav-list-item"><a href="/atom.xml" target="_self" class="nav-list-link">RSS</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">插件化方案对比</h1><div class="post-info">Mar 31, 2018</div><div class="post-content"><p><a href="http://dim.red">dim.red</a></p>
+<h1 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h1><p>市面上的插件化，已经百花齐放，趋于完善。<br>主流的开源框架主要的代表有 Alibaba 的 Atlas , 360 的 Replugin 和 DIDI 的 VirtualAPK 。<br>实现插件化的技术难点</p>
+<ul>
+<li>代码的加载:</li>
+<li>资源的加载</li>
+<li>四大组件动态加载</li>
+<li>配套的打包插件<a id="more"></a>
+<h1 id="0x01-实现原理"><a href="#0x01-实现原理" class="headerlink" title="0x01 实现原理"></a>0x01 实现原理</h1><h2 id="1-代码加载"><a href="#1-代码加载" class="headerlink" title="1. 代码加载"></a>1. 代码加载</h2>主要分为两种：第一种是将所有的代码加载在同一个ClassLoader，第二种是插件使用自定义的 ClassLoder 分别加载插件代码。 Atlas 和 Replugin,VirtualAPK 使用的都是后者，使用后者的优势就是控制的粒度更细。<h2 id="2-资源的加载"><a href="#2-资源的加载" class="headerlink" title="2. 资源的加载"></a>2. 资源的加载</h2>资源的加载要先解决一个问题，就是资源ID 的重复。方案有两种：第一种是使用不同的 Resource 加载插件资源来避免资源ID重复，第二种方式是共用一个 Resource ，通过修改插件的 Resource 的 PP 段来避免资源ID重复。第一种方式编译就不需要过多的参与，修改 PP 段的方式有两种，一种是修改 aapt 的 C 代码 ， 生成自定义的aapt。还有一种是直接的对 arsc 进行解析，修改pp段，回写成新的arsc 。看起来更极客，但是难度也更大，需要对arsc 有很深的理解，以及在不同版本下的异同。在这几个框架中，Replugin 使用的是多个 Resource 的方案。 Atlas 使用的是自定义的 aapt ,。VirtualAPK 使用的 Small 方式操作arsc。Replugin对比其他两个方案有个缺点, 他没有公共资源的概念，比如你3个插件都使用了support 包，那它需要把 support 包的资源全部打进 3个插件中。</li>
+</ul>
+<h2 id="3-四大组件"><a href="#3-四大组件" class="headerlink" title="3.  四大组件:"></a>3.  四大组件:</h2><h4 id="3-1-VirtualAPK"><a href="#3-1-VirtualAPK" class="headerlink" title="3.1 VirtualAPK"></a>3.1 VirtualAPK</h4><p>VirtualAPK  使用的是是预埋的方式。<br>Activity 当启动 插件 Activity 的会在启动的时候被替换成占坑的 Activity，然后Hook ActivityThread 的 H 和 Instrumentation 类，在对应的回调中替换回插件的 Activity .。达到欺骗系统的效果。<br>BroadcastReceiver 是将所有的静态注册转成动态注册。<br>Service 是将所有的插件 service 转成代理的Service ，在Service 的onStartCommand 方法中，重新模拟了插件 service 的声明周期。<br>ContentProvider 是将所有的插件 ContentProvider 调用转成调用代理的ContentProvider , 然后将真实的 ContentProvider 信息放在Uri 中, 通过解析Uri 获取插件的真实的 ContentProvider 信息。</p>
+<h4 id="3-2-Atlas"><a href="#3-2-Atlas" class="headerlink" title="3.2 Atlas"></a>3.2 Atlas</h4><p>Atlas 插件的四大组件是直接埋在宿主的 App 的 Manifest 中，通过监听 ClassLoader  的 findClass方法，当是插件的相关 Activity 或者 ContentProvider ，初始化好对应的插件，然后使用对应的插件 ClassLoader 加载，同时 Atlas 也支持动态添加的四大组件，该方式跟VirtualAPK 实现原理一致。</p>
+<h4 id="3-2-RePlugin"><a href="#3-2-RePlugin" class="headerlink" title="3.2 RePlugin"></a>3.2 RePlugin</h4><p>RePlugin 使用的方式比较新颖，在启动的 Activity 时候替换成了合适的占坑的Activity ，同时记录占坑 Activity 和 真实 Activity 的映射关系，然后ClassLoader的 loadClass方法中，load 占坑 Activity 类的的时候，根据占坑组件跟真实组件的映射关系, 加载真实的组件. 这样的好处是，避免了过多的 Hook 系统组件。<br>BroadcastReceiver：同VirtualAPK<br>ContentProvider：同VirtualAPK<br>Service：是直接在UI线程调用了service 的相关生命周期的方法，同时启动一个Service 来提高service所在进程优先级。</p>
+<h2 id="4-配套的打包插件"><a href="#4-配套的打包插件" class="headerlink" title="4.  配套的打包插件"></a>4.  配套的打包插件</h2><p>待续</p>
+<h1 id="0x03-框架对比"><a href="#0x03-框架对比" class="headerlink" title="0x03 框架对比"></a>0x03 框架对比</h1><h2 id="1-VirtualAPK"><a href="#1-VirtualAPK" class="headerlink" title="1. VirtualAPK:"></a>1. VirtualAPK:</h2><p>优点</p>
+<ul>
+<li>整体代码偏少, 可以符合官方的 “轻量”. </li>
+<li>扩增了android.jar 的api, 使 反射改为直接调用hide api</li>
+</ul>
+<p>缺陷</p>
+<ul>
+<li>ContentProvider 支持有问题, 不支持在主进程的ContentProvider</li>
+<li>Activity 支持多进程, 只支持Launch Model</li>
+<li>Service 的多进程只支持两个进程</li>
+<li>BroadcastReceiver 不支持多进程</li>
+<li>开发有感知, 使用CP 没有在代码实现的时候修改</li>
+<li>代码实现不优雅, 开发感知明显</li>
+<li>插件管理逻辑丢失, 需要手动管理. 每次使用插件都要自行加载</li>
+<li>Hook 太多系统的API</li>
+<li>不支持内嵌插件</li>
+<li>不支持插件依赖</li>
+</ul>
+<h2 id="2-Atlas"><a href="#2-Atlas" class="headerlink" title="2. Atlas"></a>2. Atlas</h2><p>优点</p>
+<ul>
+<li>插件的四大组件是直接声明在宿主中. 所以四大组件多进程支持都是完整的.</li>
+<li>代码实现比较优雅., </li>
+<li>完整的插件管理逻辑</li>
+<li>支持插件依赖</li>
+</ul>
+<p>缺陷</p>
+<ul>
+<li>宿主打包插件实现比较复杂，hook 了大量 Android Gradle Plugin 2.x 的代码。</li>
+<li>Hook 太多系统的API</li>
+</ul>
+<h2 id="3-RePlugin"><a href="#3-RePlugin" class="headerlink" title="3. RePlugin"></a>3. RePlugin</h2><p>优点</p>
+<ul>
+<li>开发的感知少, 得益于编译时期的字节码修改</li>
+<li>多进程支持完美, 和Activity 的 Launch Model</li>
+<li>Hook 系统api 较少</li>
+</ul>
+<p>缺陷</p>
+<ul>
+<li>资源没法复用, 插件包过大</li>
+<li>不支持插件依赖</li>
+<li>需要一个 GuardService 进程，用于管理插件信息。</li>
+</ul>
+</div></article></div></main><footer><div class="paginator"><a href="/2018/05/03/dylog_exploration/" class="prev">PREV</a><a href="/2018/02/05/android_dependency_analyse_code/" class="next">NEXT</a></div><div id="disqus_thread"></div><script>var disqus_shortname = 'dimredblog';
+var disqus_identifier = '2018/03/31/plugin_framework_ exploration/';
+var disqus_title = '插件化方案对比';
+var disqus_url = 'http://dim.red/2018/03/31/plugin_framework_ exploration/';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//dimredblog.disqus.com/count.js" async></script><div class="copyright"><p>© 2015 - 2018 <a href="http://dim.red">Dim</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script></body></html>
