@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://dim.red/2018/11/03/gradle_configuration_exploration/</loc>
+    
+    <lastmod>2018-11-02T18:14:37.422Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://dim.red/2017/12/23/sasuke_sdk/</loc>
     
     <lastmod>2018-08-25T15:11:43.267Z</lastmod>
