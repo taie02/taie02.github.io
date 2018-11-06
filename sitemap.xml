@@ -2,6 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://dim.red/2018/01/25/gradle_transform_%20exploration/</loc>
+    
+    <lastmod>2018-11-06T16:54:02.793Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://dim.red/2018/08/24/gradle_task_UP-TO-DATE/</loc>
+    
+    <lastmod>2018-11-06T16:48:47.003Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://dim.red/2018/11/03/gradle_configuration_exploration/</loc>
     
     <lastmod>2018-11-03T05:43:54.776Z</lastmod>
@@ -68,20 +82,6 @@
     <loc>http://dim.red/2016/05/27/gson-skill/</loc>
     
     <lastmod>2018-08-25T08:43:17.049Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://dim.red/2018/01/25/gradle_transform_%20exploration/</loc>
-    
-    <lastmod>2018-08-25T08:43:17.040Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://dim.red/2018/08/24/gradle_task_UP-TO-DATE/</loc>
-    
-    <lastmod>2018-08-25T08:43:17.024Z</lastmod>
     
   </url>
   
