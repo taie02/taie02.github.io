@@ -2,6 +2,34 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://dim.red/2018/11/18/android_reference_exploration/</loc>
+    
+    <lastmod>2018-11-17T18:00:07.463Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://dim.red/2017/04/05/android_plugin_transform_%20exploration/</loc>
+    
+    <lastmod>2018-11-17T17:59:08.666Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://dim.red/2015/11/12/android.support.design_bookmark/</loc>
+    
+    <lastmod>2018-11-17T17:57:40.306Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://dim.red/2018/11/18/media/android_reference_exploration/</loc>
+    
+    <lastmod>2018-11-17T17:54:10.509Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://dim.red/2018/08/24/gradle_task_UP-TO-DATE/</loc>
     
     <lastmod>2018-11-06T16:58:10.525Z</lastmod>
@@ -117,20 +145,6 @@
     <loc>http://dim.red/2018/05/13/idea_by_modify/</loc>
     
     <lastmod>2018-08-25T08:43:16.979Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://dim.red/2015/11/12/android.support.design_bookmark/</loc>
-    
-    <lastmod>2018-08-25T08:41:43.705Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://dim.red/2017/04/05/android_plugin_transform_%20exploration/</loc>
-    
-    <lastmod>2018-08-25T08:41:39.608Z</lastmod>
     
   </url>
   
