@@ -1,5 +1,5 @@
 <!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> ProGuard 初探 · dim's blog</title><meta name="description" content="ProGuard 初探 - Dim"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://dim.red/atom.xml" title="dim's blog"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">博客</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">文章</a></li><li class="nav-list-item"><a href="/about/" target="_self" class="nav-list-link">关于</a></li><li class="nav-list-item"><a href="/atom.xml" target="_self" class="nav-list-link">RSS</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">ProGuard 初探</h1><div class="post-info">Jan 28, 2019</div><div class="post-content"><h1 id="0x00-环境"><a href="#0x00-环境" class="headerlink" title="0x00  环境"></a>0x00  环境</h1><p>版本：<a href="https://sourceforge.net/p/proguard/code/ci/proguard6.0.3/tree/" target="_blank" rel="noopener">6.0.3</a><br>使用文档：<a href="https://www.guardsquare.com/en/products/proguard/manual/usage" target="_blank" rel="noopener">usage</a></p>
-<h1 id="0x01-Proguard-总览"><a href="#0x01-Proguard-总览" class="headerlink" title="0x01 Proguard 总览"></a>0x01 Proguard 总览</h1><p>ProGuard 是 java 字节码优化工具， 广泛运用到 Java 和 Android 项目中。可以有效的减少程序的大小，提高运行效率，提高逆向分析的成本。<br><img src="https://upload-images.jianshu.io/upload_images/166866-586c749dea90c684.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Proguard 运行过程"><br>Proguard 优化主要分为四个阶段:<br>Shrink , Optimize, Obfuscate , Preverify 四个阶段</p>
+<h1 id="0x01-ProGuard-总览"><a href="#0x01-ProGuard-总览" class="headerlink" title="0x01 ProGuard 总览"></a>0x01 ProGuard 总览</h1><p>ProGuard 是 java 字节码优化工具， 广泛运用到 Java 和 Android 项目中。可以有效的减少程序的大小，提高运行效率，提高逆向分析的成本。<br><img src="https://upload-images.jianshu.io/upload_images/166866-586c749dea90c684.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="ProGuard 运行过程"><br>Proguard 优化主要分为四个阶段:<br>Shrink , Optimize, Obfuscate , Preverify 四个阶段</p>
 <ul>
 <li>Shrink: 删除没有被使用的类和方法。</li>
 <li>Optimize: 对代码指令进行优化。</li>
@@ -288,7 +288,7 @@
 <li>返回值 o 没有成为 func 的返回值</li>
 <li>返回值 0 没有被 thow 抛出.</li>
 </ol>
-<p>ProGuard 对于 Library 中的方法做最坏的打算, 参数会发生逃逸。方法有外部副作用。对象和参数会被修改。返回值是一个外部引用。不满足条件 1,2,3,4.  Proguard 提供<code>声明</code>来修改它们的副作用影响范围。 对于 Library 来说，  ProGuard 不会分析其内部代码指令。直接按照声明确定他们的副作用影响。 对于程序中的方法。会对方法内部指令进行分析计算副作用影响。开发者可以根据需要使用<code>声明</code>修改它的副作用影响。<br>声明方式如下:</p>
+<p>ProGuard 对于 Library 中的方法做最坏的打算, 参数会发生逃逸。方法有外部副作用。对象和参数会被修改。返回值是一个外部引用。不满足条件 1,2,3,4.  ProGuard 提供<code>声明</code>来修改它们的副作用影响范围。 对于 Library 来说，  ProGuard 不会分析其内部代码指令。直接按照声明确定他们的副作用影响。 对于程序中的方法。会对方法内部指令进行分析计算副作用影响。开发者可以根据需要使用<code>声明</code>修改它的副作用影响。<br>声明方式如下:</p>
 <table>
 <thead>
 <tr>
@@ -370,7 +370,7 @@
 <p>我们可以通过删除 R 文件来减小包大小。 主工程的 R 文件可以直接删除。 对于Library 中的 R 文件需要先内联。然后再删除。<br>方案:</p>
 <ol>
 <li>通过自定义 Android Gradle Transform Api 来实现。内联和删除 R 文件。</li>
-<li>使用 Proguard 来做内联和删除的优化。通过优化项<code>field/propagation/value</code> 来实现。  ProGuard 这获取是一个更为优雅的选择。代价是 <code>Optimize</code> 的耗时。</li>
+<li>使用 ProGuard 来做内联和删除的优化。通过优化项<code>field/propagation/value</code> 来实现。  ProGuard 这获取是一个更为优雅的选择。代价是 <code>Optimize</code> 的耗时。</li>
 </ol>
 <h3 id="2-2-API-检查"><a href="#2-2-API-检查" class="headerlink" title="2.2 API 检查"></a>2.2 API 检查</h3><p>在上次文章 <a href="https://dim.red/2018/11/03/gradle_configuration_exploration/">Gradle Configuration</a> 分析的中可以发现 Gradle 对依赖版本的判断是不可靠的。我们需要在最后阶段进行 API 检查。  防止出现  NoSuchMethodException, NoSuchFieldException,ClassNotFoundException 等异常。 </p>
 <ol>
@@ -402,7 +402,7 @@
 <li>去除多余的 Attributes（RuntimeInvisibleAnnotations，LocalVariableTypeTable…） </li>
 </ol>
 <h1 id="0x04-尾巴"><a href="#0x04-尾巴" class="headerlink" title="0x04 尾巴"></a>0x04 尾巴</h1><p>我们往往使用 混淆 来代表 ProGuard， 这有失偏颇。 混淆只是 ProGuard 的其中一功能。远远不能来代表 ProGuard 。总体来说 ProGuard 是一个特别优秀的框架。拥有完整的 Java 1－10 字节码解析。完整的字节码操作模拟。但是较为复杂的 Optimize 代码还不稳定。耗时较长。部分优化实现相对保留。通过对 ProGuard 的理解和学习会对于以往使用运气编程情况有所改善。 </p>
-<h1 id="0x05-其他"><a href="#0x05-其他" class="headerlink" title="0x05 其他"></a>0x05 其他</h1><p><code>-whyareyoukeeping</code>: 可以通过该选项在 Debug 的时候。 定位类被保留的原因。 正常情况下不建议开启。会延长 proguard 时长。<br><code>-printconfiguration</code>: 聚合 ProGuard 的所有rules 输出到具体文件上。<br><code>-addconfigurationdebugging</code>： 有效的定位反射导致的问题。<br>必要的属性:<br><code>-keepattributes LineNumberTable,Signature,RuntimeVisibleAnnotations,RuntimeVisibleParameterAnnotations,AnnotationDefault</code></p>
+<h1 id="0x05-其他"><a href="#0x05-其他" class="headerlink" title="0x05 其他"></a>0x05 其他</h1><p><code>-whyareyoukeeping</code>: 可以通过该选项在 Debug 的时候。 定位类被保留的原因。 正常情况下不建议开启。会延长 ProGuard 时长。<br><code>-printconfiguration</code>: 聚合 ProGuard 的所有rules 输出到具体文件上。<br><code>-addconfigurationdebugging</code>： 有效的定位反射导致的问题。<br>必要的属性:<br><code>-keepattributes LineNumberTable,Signature,RuntimeVisibleAnnotations,RuntimeVisibleParameterAnnotations,AnnotationDefault</code></p>
 <h1 id="0x06-相关连接"><a href="#0x06-相关连接" class="headerlink" title="0x06 相关连接"></a>0x06 相关连接</h1><ol>
 <li><a href="https://docs.oracle.com/javase/specs/jvms/se10/html/index.html" target="_blank" rel="noopener">The Java® Virtual Machine Specification</a></li>
 <li><a href="https://dim.red/2018/11/03/gradle_configuration_exploration/">Gradle Configuration</a></li>
