@@ -1,27 +1,27 @@
 <!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> ProGuard 初探 · dim's blog</title><meta name="description" content="ProGuard 初探 - Dim"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://dim.red/atom.xml" title="dim's blog"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">博客</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">文章</a></li><li class="nav-list-item"><a href="/about/" target="_self" class="nav-list-link">关于</a></li><li class="nav-list-item"><a href="/atom.xml" target="_self" class="nav-list-link">RSS</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">ProGuard 初探</h1><div class="post-info">Jan 28, 2019</div><div class="post-content"><h1 id="0x00-环境"><a href="#0x00-环境" class="headerlink" title="0x00  环境"></a>0x00  环境</h1><p>版本：<a href="https://sourceforge.net/p/proguard/code/ci/proguard6.0.3/tree/" target="_blank" rel="noopener">6.0.3</a><br>使用文档：<a href="https://www.guardsquare.com/en/products/proguard/manual/usage" target="_blank" rel="noopener">usage</a></p>
-<h1 id="0x01-Proguard-总览"><a href="#0x01-Proguard-总览" class="headerlink" title="0x01 Proguard 总览"></a>0x01 Proguard 总览</h1><p>Proguard 是 java 字节码优化工具， 广泛运用到 java 和 android 项目中。可以有效的减少程序的大小, 提高运行效率。 提高逆向分析的成本。<br><img src="https://upload-images.jianshu.io/upload_images/166866-586c749dea90c684.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Proguard 运行过程"><br>Proguard 优化主要分为四个阶段:<br>Shrink , Optimize, Obfuscate , Preverify 四个阶段</p>
+<h1 id="0x01-Proguard-总览"><a href="#0x01-Proguard-总览" class="headerlink" title="0x01 Proguard 总览"></a>0x01 Proguard 总览</h1><p>ProGuard 是 java 字节码优化工具， 广泛运用到 Java 和 Android 项目中。可以有效的减少程序的大小，提高运行效率，提高逆向分析的成本。<br><img src="https://upload-images.jianshu.io/upload_images/166866-586c749dea90c684.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Proguard 运行过程"><br>Proguard 优化主要分为四个阶段:<br>Shrink , Optimize, Obfuscate , Preverify 四个阶段</p>
 <ul>
-<li>Shrink: 删除没有被使用的类和方法.</li>
-<li>Optimize: 对代码指令进行优化.</li>
-<li>Obfuscate: 对代码名称进行混淆.</li>
+<li>Shrink: 删除没有被使用的类和方法。</li>
+<li>Optimize: 对代码指令进行优化。</li>
+<li>Obfuscate: 对代码名称进行混淆。</li>
 <li>Preverify: 对 class 进行预校验，校验  StackMap /StackMapTable 属性。</li>
 </ul>
-<p>四个阶段可以独立运行的, 默认全部开启,  可以通过配置 <code>-dontshrink</code>,<code>-dontoptimize</code>,<code>-dontobfuscate</code>,<code>-dontpreverify</code> 关闭对应的阶段.</p>
-<p>注： proguard 处理 class 。class 文件可以由 <a href="http://jikes.sourceforge.net/" target="_blank" rel="noopener">jikes</a>  或  <a href="https://docs.oracle.com/javase/6/docs/technotes/tools/windows/javac.html" target="_blank" rel="noopener">javac</a> 或 Kotlin 生成，  Proguard 会根据 javac 和 jikes 特性做针对性优化。<br><a id="more"></a></p>
-<h1 id="0x02-Proguard-处理过程"><a href="#0x02-Proguard-处理过程" class="headerlink" title="0x02 Proguard 处理过程"></a>0x02 Proguard 处理过程</h1><p><img src="https://upload-images.jianshu.io/upload_images/166866-5298ef6a5703800b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Proguard 处理过程"></p>
-<h2 id="1-Configuration-Parse"><a href="#1-Configuration-Parse" class="headerlink" title="1. Configuration Parse"></a>1. Configuration Parse</h2><h3 id="1-1-过程"><a href="#1-1-过程" class="headerlink" title="1.1 过程"></a>1.1 过程</h3><p>将ProguardFile 文件声明的 rule 解析成 Configuration 配置.</p>
-<h3 id="1-2-常用的参数"><a href="#1-2-常用的参数" class="headerlink" title="1.2 常用的参数"></a>1.2 常用的参数</h3><h5 id="keepattributes"><a href="#keepattributes" class="headerlink" title="keepattributes"></a>keepattributes</h5><p><strong>-keepattributes</strong>  [<em><a href="https://www.guardsquare.com/en/products/proguard/manual/attributes" target="_blank" rel="noopener">attribute_filter</a></em>]<br>保留类,方法,字段中的 的 Attributes 属性 .  <a href="https://docs.oracle.com/javase/specs/jvms/se10/html/jvms-4.html#jvms-4.7" target="_blank" rel="noopener">Attributes</a> 存在多种类型. 类型如下:<br><img src="https://upload-images.jianshu.io/upload_images/166866-b76cfb8334387d57.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Attributes"><br>Proguard 支持 java 1-10 定义的所有的 Attributes。<br>为了保证程序能正常运行需要保留了基础属性：<code>ConstantValue</code>，<code>Code</code> , <code>BootstrapMethods</code>。其余属性均可被移除.<br><code>ConstantValue</code>: 用于静态 final 修饰的基本类型 或 String 类型字段，指向字段的初始值。<br><code>Code</code>：当前方法的代码指令.<br><code>BootstrapMethods</code>：和 <code>invokedynamic</code> 指令相配合实现动态调用方法。 例如 java 8 的 lambda 是基于此实现的。 </p>
-<p>Proguard 的 Attributes 是在 <code>Obfuscate</code> 阶段执行。如果想让改配置生效需要开启 <code>Obfuscate</code> .</p>
-<h5 id="keep-option"><a href="#keep-option" class="headerlink" title="keep option"></a>keep option</h5><p>keep option 会应用在所有优化阶段. 主要分为三种情况. 其余情况均是这三种情况的衍生.</p>
-<p><strong>-keep</strong> [<a href="https://www.guardsquare.com/proguard/manual/usage#keepoptionmodifiers" target="_blank" rel="noopener">,<em>modifier</em></a>,…] <a href="https://www.guardsquare.com/proguard/manual/usage#classspecification" target="_blank" rel="noopener"><em>class_specification</em></a><br>Keep 类限定 的 类。 同时 Keep 该类下 成员限定 的方法或者字段<br><strong>-keepclassmembers</strong> [<a href="https://www.guardsquare.com/proguard/manual/usage#keepoptionmodifiers" target="_blank" rel="noopener">,<em>modifier</em></a>,…] <a href="https://www.guardsquare.com/proguard/manual/usage#classspecification" target="_blank" rel="noopener"><em>class_specification</em></a><br> Keep 类限定 的 成员限定 的成员 。不 Keep 类限定  的类。<br><strong>-keepclasseswithmembers [</strong><a href="https://www.guardsquare.com/proguard/manual/usage#keepoptionmodifiers" target="_blank" rel="noopener">,<em>modifier</em></a>,…] <a href="https://www.guardsquare.com/proguard/manual/usage#classspecification" target="_blank" rel="noopener"><em>class_specification</em></a><br>如果 类限定 和 成员限定 都存在， 那么 Keep 类 和 成员限定。</p>
-<p>Keep 在不同阶段的含义不同: 在 Shrink 阶段为成员或类不被删除, 在 Optimize  阶段为类和成员内部的指令不被优化. Obfuscate 阶段为类和成员的名称不被混淆.</p>
+<p>四个阶段可以独立运行的，默认全部开启，可以通过配置 <code>-dontshrink</code>，<code>-dontoptimize</code>，<code>-dontobfuscate</code>，<code>-dontpreverify</code> 关闭对应的阶段.</p>
+<p>注： ProGuard 处理 class 。class 文件可以由 <a href="http://jikes.sourceforge.net/" target="_blank" rel="noopener">jikes</a>  或  <a href="https://docs.oracle.com/javase/6/docs/technotes/tools/windows/javac.html" target="_blank" rel="noopener">javac</a> 或 Kotlin 生成，  ProGuard 会根据 javac 和 jikes 特性做针对性优化。<br><a id="more"></a></p>
+<h1 id="0x02-ProGuard-处理过程"><a href="#0x02-ProGuard-处理过程" class="headerlink" title="0x02 ProGuard 处理过程"></a>0x02 ProGuard 处理过程</h1><p><img src="https://upload-images.jianshu.io/upload_images/166866-5298ef6a5703800b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="ProGuard 处理过程"></p>
+<h2 id="1-Configuration-Parse"><a href="#1-Configuration-Parse" class="headerlink" title="1. Configuration Parse"></a>1. Configuration Parse</h2><h3 id="1-1-过程"><a href="#1-1-过程" class="headerlink" title="1.1 过程"></a>1.1 过程</h3><p>将 ProguardFile 文件编写的规则解析成 Configuration 配置.</p>
+<h3 id="1-2-常用的参数"><a href="#1-2-常用的参数" class="headerlink" title="1.2 常用的参数"></a>1.2 常用的参数</h3><h5 id="keepattributes"><a href="#keepattributes" class="headerlink" title="keepattributes"></a>keepattributes</h5><p><strong>-keepattributes</strong>  [<em><a href="https://www.guardsquare.com/en/products/proguard/manual/attributes" target="_blank" rel="noopener">attribute_filter</a></em>]<br>保留类或方法或字段中 Attributes 属性.  <a href="https://docs.oracle.com/javase/specs/jvms/se10/html/jvms-4.html#jvms-4.7" target="_blank" rel="noopener">Attributes</a> 存在多种类型. 类型如下:<br><img src="https://upload-images.jianshu.io/upload_images/166866-b76cfb8334387d57.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Attributes"><br>ProGuard 支持 Java 1-10 定义的所有的 Attributes。<br>为了保证程序能正常运行需要保留了部分属性：<code>ConstantValue</code>，<code>Code</code> , <code>BootstrapMethods</code>。其余属性均可被删除.<br><code>ConstantValue</code>: 用于 final 修饰的 基本类型 或 String 类型字段，指向字段的初始值。<br><code>Code</code>：指向当前方法的代码指令。<br><code>BootstrapMethods</code>：和 <code>invokedynamic</code> 指令相配合实现动态调用方法。 例如 java 8 的 lambda。 </p>
+<p>ProGuard 的 Attributes 是在 <code>Obfuscate</code> 阶段执行。如果想该配置生效需要开启 <code>Obfuscate</code> .</p>
+<h5 id="Keep-Option"><a href="#Keep-Option" class="headerlink" title="Keep Option"></a>Keep Option</h5><p>Keep Option 会应用在所有优化阶段，主要分为三种情况。其余情况均是这三种情况的衍生。</p>
+<p><strong>-keep</strong> [<a href="https://www.guardsquare.com/proguard/manual/usage#keepoptionmodifiers" target="_blank" rel="noopener">,<em>modifier</em></a>,…] <a href="https://www.guardsquare.com/proguard/manual/usage#classspecification" target="_blank" rel="noopener"><em>class_specification</em></a><br>Keep 类限定下的类。 同时 Keep 该类下 成员限定 的方法或字段。<br><strong>-keepclassmembers</strong> [<a href="https://www.guardsquare.com/proguard/manual/usage#keepoptionmodifiers" target="_blank" rel="noopener">,<em>modifier</em></a>,…] <a href="https://www.guardsquare.com/proguard/manual/usage#classspecification" target="_blank" rel="noopener"><em>class_specification</em></a><br> Keep 类限定 下的 成员限定 的方法或字段 。不 Keep 类限定  的类。<br><strong>-keepclasseswithmembers [</strong><a href="https://www.guardsquare.com/proguard/manual/usage#keepoptionmodifiers" target="_blank" rel="noopener">,<em>modifier</em></a>,…] <a href="https://www.guardsquare.com/proguard/manual/usage#classspecification" target="_blank" rel="noopener"><em>class_specification</em></a><br>如果 类限定 和 成员限定 都存在， 那么 Keep 类 和 成员限定。</p>
+<p>Keep 在不同阶段的含义不同: 在<code>Shrink</code>阶段为成员和类不被删除, 在<code>Optimize</code> 阶段为类和成员内部的指令不被优化. <code>Obfuscate</code>阶段为类和成员的名称不被混淆.</p>
 <p>class_specification<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[@annotationtype] [[!]public|final|abstract|@ ...] [!]interface|class|enum classname</span><br><span class="line">    [extends|implements [@annotationtype] classname]</span><br><span class="line">[&#123;</span><br><span class="line">    [@annotationtype] [[!]public|private|protected|static|volatile|transient ...] &lt;fields&gt; |</span><br><span class="line">                                                                      (fieldtype fieldname);</span><br><span class="line">    [@annotationtype] [[!]public|private|protected|static|synchronized|native|abstract|strictfp ...] &lt;methods&gt; |</span><br><span class="line">                                                                                           &lt;init&gt;(argumenttype,...) |</span><br><span class="line">                                                                                           classname(argumenttype,...) |</span><br><span class="line">                                                                                           (returntype methodname(argumenttype,...));</span><br><span class="line">    [@annotationtype] [[!]public|private|protected|static ... ] *;</span><br><span class="line">    ...</span><br><span class="line">&#125;]</span><br></pre></td></tr></table></figure></p>
 <p>简化<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">类限定&#123;</span><br><span class="line">    成员限定[]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <ul>
 <li>类限定： 通过 注解，accessFlags，包名，类名， 父类，签名，接口等信息指定规则。 </li>
-<li>成员限定：成员有两种 字段和方法。字段通过 注解，accessFlags ，字段名，描述符，签名等信息。  方法通过注解，accessFlags， 方法名，参数，描述符，签名等信息。</li>
+<li>成员限定：成员有两种 字段和方法。<br>字段通过 注解，accessFlags ，字段名，描述符，签名等信息。<br>方法通过 注解，accessFlags， 方法名，参数，描述符，签名等信息。</li>
 </ul>
-<p>默认情况下 Keep Option 将应用到 ’ Shrink‘，’ Optimize‘，’ Obfuscate‘ 三个阶段。Proguard 支持更为细致的控制。通过 modifier 来控制。</p>
+<p>默认情况下 Keep Option 将应用到 ’ Shrink‘，’ Optimize‘，’ Obfuscate‘ 三个阶段。ProGuard 支持更为细致的控制。通过 <code>modifier</code> 来控制。</p>
 <table>
 <thead>
 <tr>
@@ -48,7 +48,7 @@
 </tr>
 </tbody>
 </table>
-<h5 id="keepnames-option"><a href="#keepnames-option" class="headerlink" title="keepnames option"></a>keepnames option</h5><p>keepnames   等价于 keep,allowshrinking.<br>这里通过比较 keep  和 keepnames 来理解二者的区别.</p>
+<h5 id="KeepNames-Option"><a href="#KeepNames-Option" class="headerlink" title="KeepNames Option"></a>KeepNames Option</h5><p>keepnames   等价于 keep,allowshrinking.<br>这里通过比较 keep  和 keepnames 来理解二者的区别.</p>
 <table>
 <thead>
 <tr>
@@ -59,89 +59,91 @@
 <tbody>
 <tr>
 <td>-keep class_specification</td>
-<td>保留 类限定和成员限制 不被删除.同时他们的名称不被混淆</td>
+<td><code>类限定</code> 和<code>成员限制</code> 不被删除.同时 <code>类限定</code>和<code>成员限制</code> 名称不被混淆</td>
 </tr>
 <tr>
 <td>-keepnames class_specification</td>
-<td>保证 类限定 和 限定成员 名称不被混淆, 不保证他们是否被删除</td>
+<td><code>类限定</code>和 <code>限定成员</code> 名称不被混淆, 不保证<code>类限定</code>和<code>成员限制</code>是否被删除</td>
 </tr>
 <tr>
 <td>-keepclassmembers class_specification</td>
-<td>保留 类限定和成员限制 不被删除.同时成员的名称不被混淆</td>
+<td><code>类限定</code> 和<code>成员限制</code>  不被删除.同时 <code>成员限制</code> 的名称不被混淆</td>
 </tr>
 <tr>
 <td>-keepclassmembernames class_specification</td>
-<td>保证 成员限制 名称不被混淆, 不保证他们是否被删除</td>
+<td><code>成员限制</code> 的名称不被混淆, 不保证他们是否被删除</td>
 </tr>
 <tr>
 <td>-keepclasseswithmembers  class_specification</td>
-<td>类限定 和 成员限定 都存在,保证 类限定 和 限制成员 不被删除. 同时他们的名称不被混淆</td>
+<td>如果 <code>类限定</code> 和<code>成员限制</code> 都存在, 那么<code>类限定</code> 和<code>成员限制</code>  不被删除. 同时他们的名称不被混淆</td>
 </tr>
 <tr>
 <td>-keepclasseswithmembernames  class_specification</td>
-<td>类限定 和 成员限定 都存在,保证 类限定 和 限定成员限制 名称不被混淆, 不保证他们是否被删除</td>
+<td>如果<code>类限定</code> 和<code>成员限制</code> 都存在, 那么<code>类限定</code> 和<code>成员限制</code> 名称不被混淆, 不保证他们是否被删除</td>
 </tr>
 </tbody>
 </table>
-<h2 id="2-Read-Inputs"><a href="#2-Read-Inputs" class="headerlink" title="2. Read Inputs"></a>2. Read Inputs</h2><p>通过 <code>-injars</code> 和 <code>-libraryjars</code> 来声明 input. injars 描述程序运行的代码。后续的优化均针对该代码。<br>, libraryjars 描述程序运行中需要用的环境, 主要是为后面优化阶段提供信息分享。libraryjars 一般情况为 JRE下的 rt.jar 和一些特定平台类型的 jar 。 </p>
-<p>可以添加参数修改 Library 的默认解析行为。<br><code>-skipnonpubliclibraryclasses</code>：解析 library 过程中跳过所有非 public 的类。<br><code>-dontskipnonpubliclibraryclasses</code> ：解析 library 过程中解析所有类。<br><code>-dontskipnonpubliclibraryclassmembers</code>：解析 library 过程中解析字段和方法。<br>理论上如果 library 中的类或方法是非 public  说明开发者并不希望被访问或使用。 我们可以使用参数关闭，关闭以后会加快运行。<br>最终得到两个 ClassPool ，ProgramClass 和 LibraryClass.</p>
-<h2 id="3-Initialize"><a href="#3-Initialize" class="headerlink" title="3. Initialize"></a>3. Initialize</h2><p>Proguard 基于两个ClassPool 对 所有的 Class 进行连接.</p>
+<h2 id="2-Read-Inputs"><a href="#2-Read-Inputs" class="headerlink" title="2. Read Inputs"></a>2. Read Inputs</h2><p>通过 <code>-injars</code> 和 <code>-libraryjars</code> 来声明 <code>input</code>. <code>injars</code> 描述程序运行的代码。后续将对程序代码做优化。 <code>libraryjars</code> 描述程序运行中需要用的环境, 主要是为后面优化阶段提供信息分析。<code>libraryjars</code> 一般情况为 <code>JRE</code> 下的 <code>rt.ja</code>r 和一些特定平台类型的 jar 。 </p>
+<p>可以添加参数修改 Library 的默认解析行为。<br><code>-skipnonpubliclibraryclasses</code>：解析 library 过程中跳过所有非 public 的类。<br><code>-dontskipnonpubliclibraryclasses</code> ：解析 library 过程中解析所有类。<br><code>-dontskipnonpubliclibraryclassmembers</code>：解析 library 过程中解析所有字段和方法。</p>
+<p>理论上如果 Library 中的类或成员是非 public  说明开发者并不希望被访问或使用。 我们可以使用参数关闭，关闭以后会加快运行。</p>
+<p>最终得到两个 ClassPool ，ProgramClass 和 LibraryClass.</p>
+<h2 id="3-Initialize"><a href="#3-Initialize" class="headerlink" title="3. Initialize"></a>3. Initialize</h2><p>ProGuard 基于两个 ClassPool 对所有的 Class 进行连接.</p>
 <ol>
-<li>连接包括所有的类的层级关系（父类，子类，interface ）。</li>
-<li>连接注解中 enum常量。</li>
+<li>连接包括所有的类的层级关系 ( 父类，子类，interface )。</li>
+<li>连接注解中 enum 常量。</li>
 <li>连接 code 字节码相关字段和相关类。<br>method 的操作:关联对应的 class 和 method。<br>field 的 操作:关联对应的 class 和 field。</li>
-<li>连接反射信息<br>反射是根据类名或方法名或字段名进行操作的。当我们将反射的String 跟 对应的类或者方法或者字段连接上. 当对应的类或方法或字段混淆的时候同步变更,那么反射还是生效的, 之所以出现了 NoSuchMethodException, NoSuchFieldException,ClassNotFoundException 等问题。是因为没有同步变更. 同步变更需要在 Initialize 阶段将反射信息连接上对应的类字段方法. 这里的连接并不是没有缺陷的.但是会处理以下几种情况<br>Class.forName(“SomeClass”);<br>Class.forName(“SomeClass”).newInstance().<br>AtomicIntegerFieldUpdater.newUpdater(A.class, “someField”)<br>AtomicLongFieldUpdater.newUpdater(A.class, “someField”)<br>AtomicReferenceFieldUpdater.newUpdater(A.class, B.class，”someField”)<br>AtomicIntegerFieldUpdater.newUpdater(…, “someField”)<br>AtomicLongFieldUpdater.newUpdater(…, “someField”)<br>AtomicReferenceFieldUpdater.newUpdater(…, “someField”)<br>SomeClass.class.getMethod（”someMethod”,…）<br>SomeClass.class.getDeclaredMethod（”someMethod”,…）<br>SomeClass.class.getField（”someMethod”,…）<br>SomeClass.class.getDeclaredFields（”someMethod”,…）<br>SomeClass.class.getConstructor（”someMethod”,…）<br>SomeClass.class.getDeclaredConstructor（”someMethod”,…）<br>这里情况,反射信息能被正确连接.</li>
+<li>连接反射信息<br>反射是根据类名或方法名或字段名进行操作的。当我们将反射使用的字符串跟对应的类或方法或字段连接上. 当对应的类或方法或字段混淆的时候同步变更,那么反射依旧生效, 之所以出现了 NoSuchMethodException, NoSuchFieldException,ClassNotFoundException 等问题，就是因为不同步更改信息. 同步更改需要在<code>Initialize</code> 阶段将反射信息连接上对应的类字段方法. 这里的连接并不是没有缺陷的.但是会处理以下几种情况<br>Class.forName(“SomeClass”);<br>Class.forName(“SomeClass”).newInstance().<br>AtomicIntegerFieldUpdater.newUpdater(A.class, “someField”)<br>AtomicLongFieldUpdater.newUpdater(A.class, “someField”)<br>AtomicReferenceFieldUpdater.newUpdater(A.class, B.class，”someField”)<br>AtomicIntegerFieldUpdater.newUpdater(…, “someField”)<br>AtomicLongFieldUpdater.newUpdater(…, “someField”)<br>AtomicReferenceFieldUpdater.newUpdater(…, “someField”)<br>SomeClass.class.getMethod（”someMethod”,…）<br>SomeClass.class.getDeclaredMethod（”someMethod”,…）<br>SomeClass.class.getField（”someMethod”,…）<br>SomeClass.class.getDeclaredFields（”someMethod”,…）<br>SomeClass.class.getConstructor（”someMethod”,…）<br>SomeClass.class.getDeclaredConstructor（”someMethod”,…）<br>这里情况,反射信息能被正确连接.</li>
 </ol>
 <ul>
 <li>Q： 既然 Proguard  会为反射连接信息。 那么我们还要编写针对混淆的规则吗？<br>A： 需要。这里的连接是基于模板匹配。并没有做更多的尝试。 当你的代码不满足上面模板的话。不能被正确配置。例子如下：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Class cls = Class.forName(&quot;SomeClass&quot;); // SomeClass 可以被正确设置</span><br><span class="line">Method ss = cls.getMethod(&quot;someMethod&quot;); // someMethod 不能被正确设置， 因为不满足任何模板</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
-<p>上面的情况如果要被正确模式。 需要进行静态分析。 这将会是一个相对耗时的操作。Proguard 的静态分析只出现在 <code>Optimize</code>.</p>
-<h3 id="Note-And-Warn"><a href="#Note-And-Warn" class="headerlink" title="Note And Warn"></a>Note And Warn</h3><p>在连接的过程中， Proguard 会提供一些信息，用于我们定位和发现问题。<br>信息主要分为两部分。note 和 warn。</p>
-<h4 id="note"><a href="#note" class="headerlink" title="note"></a>note</h4><ul>
+<p>上面的情况如果要被正确模式。 需要进行静态分析。 这将会是一个相对耗时的操作。ProGuard 的静态分析只出现在 <code>Optimize</code>.</p>
+<h3 id="Note-And-Warn"><a href="#Note-And-Warn" class="headerlink" title="Note And Warn"></a>Note And Warn</h3><p>在连接的过程中， ProGuard 会提供一些信息，用于我们定位和发现问题。<br>信息主要分为两部分。note 和 warn。</p>
+<h4 id="Note"><a href="#Note" class="headerlink" title="Note"></a>Note</h4><ul>
 <li>configuration 配置问题。</li>
 <li>重复的类。</li>
 <li>反射潜在的问题。</li>
 </ul>
-<h4 id="warn"><a href="#warn" class="headerlink" title="warn"></a>warn</h4><ul>
+<h4 id="Warn"><a href="#Warn" class="headerlink" title="Warn"></a>Warn</h4><ul>
 <li>Library 中使用了程序中的类。</li>
 <li>类，方法，字段 连接不到。 （即缺失相对应的类，方法，字段）</li>
 </ul>
-<p>通过参数关闭对应类或类下的警告或信息<br><strong>-dontnote</strong> [<em><a href="https://www.guardsquare.com/proguard/manual/usage#filters" target="_blank" rel="noopener">class_filter</a></em>]<br><strong>-dontwarn</strong> [<em><a href="https://www.guardsquare.com/proguard/manual/usage#filters" target="_blank" rel="noopener">class_filter</a></em>]</p>
+<p>通过参数关闭对应类或对应类下的警告信息<br><strong>-dontnote</strong> [<em><a href="https://www.guardsquare.com/proguard/manual/usage#filters" target="_blank" rel="noopener">class_filter</a></em>]<br><strong>-dontwarn</strong> [<em><a href="https://www.guardsquare.com/proguard/manual/usage#filters" target="_blank" rel="noopener">class_filter</a></em>]</p>
 <p>Initialize 阶段是后面所有优化的基础。</p>
-<p>注：note 和 warn 相当有用。通过 note 信息我们可以知道可能潜在的混淆问题。warn 可以帮助我们检查 API 兼容。这非常有用。</p>
-<h2 id="4-Shrink"><a href="#4-Shrink" class="headerlink" title="4.Shrink"></a>4.Shrink</h2><h3 id="4-1-Shrink-优化"><a href="#4-1-Shrink-优化" class="headerlink" title="4.1 Shrink 优化"></a>4.1 Shrink 优化</h3><p>Proguard 会根据 Configuration  Roots  开始标记, 同时根据 roots 为入口开始发散 . 标记完成以后,  删除未被标记的类或成员. 得到的是被精简的 ClassPool .</p>
-<h3 id="4-2-Roots"><a href="#4-2-Roots" class="headerlink" title="4.2 Roots"></a>4.2 Roots</h3><p>Roots 包括 类，方法，字段, 方法指令,来源主要有 2 种。</p>
+<p>注：Note 和 Warn 相当有用。通过 Note 信息我们可以知道可能潜在的混淆问题。Warn 可以帮助我们检查 API 兼容。这非常有用。</p>
+<h2 id="4-Shrink"><a href="#4-Shrink" class="headerlink" title="4.Shrink"></a>4.Shrink</h2><h3 id="4-1-Shrink-优化"><a href="#4-1-Shrink-优化" class="headerlink" title="4.1 Shrink 优化"></a>4.1 Shrink 优化</h3><p>ProGuard 会根据 Configuration  Roots  开始标记, 同时根据 Roots 为入口开始发散 . 标记完成以后,  删除未被标记的类或成员. 最终得到的是精简的 ClassPool 。</p>
+<h3 id="4-2-Roots"><a href="#4-2-Roots" class="headerlink" title="4.2 Roots"></a>4.2 Roots</h3><p>Roots 包括 类，方法，字段, 方法指令, 来源主要有 2 种。</p>
 <ol>
-<li>通过 keep 关键字 allowshrinking 不为 true 。计算 class_specification 中 类限定 和 限定成员 </li>
-<li>通过 keepclasseswithmembers 关键字 allowshrinking 不为 true 。如果 类限定 和 成员限定都存在。计算 class_specification 中 类限定 和 成员限定 </li>
+<li>通过 keep 同时 allowshrinking 不为 true 。计算 class_specification 中 <code>类限定</code>和<code>限定成员</code> </li>
+<li>通过 keepclasseswithmembers 关键字 allowshrinking 不为 true 。如果 <code>类限定</code> 和 <code>成员限定</code>都存在。计算 class_specification 中 类限定 和 成员限定 </li>
 </ol>
 <h3 id="4-3-标记流程"><a href="#4-3-标记流程" class="headerlink" title="4.3 标记流程"></a>4.3 标记流程</h3><p>通过开始标记 Roots 发散到所有的代码.</p>
 <ul>
-<li>类的标记：标记类和父类。</li>
-<li>方法：标记方法. 如果是虚方法, 网上标记对应的方法.</li>
-<li>字段：标记字段和字段的相关Class。</li>
+<li>类：标记类和父类。</li>
+<li>方法：标记方法. 如果是虚方法, 往上标记对应的虚方法.</li>
+<li>字段：标记字段和字段的相关 Class。</li>
 <li>方法指令: 方法调用指令标记相关类和方法, 字段操作指令标记相关类和字段</li>
 </ul>
 <p>注: 标记过程中主要是使用 <code>Initialize</code> 阶段的连接信息.</p>
 <h3 id="4-3-保留规则"><a href="#4-3-保留规则" class="headerlink" title="4.3 保留规则"></a>4.3 保留规则</h3><ol>
-<li>一个类或方法或字段在 Goots 中将会保留。</li>
+<li>一个类或方法或字段在 Roots 中将会保留。</li>
 <li>一个类或方法或字段被使用将会保留。</li>
 <li>一个类被 keep 保留， 那么它的构造方法（<init>），非空静态初始化(<cinit>)也将被保留。</cinit></init></li>
 <li>一个类被保留，那么它从 library 中继承的方法也将被保留下来。</li>
-<li>一个类被保留，那么它的父类也会被保留</li>
+<li>一个类被保留，那么它的父类也会被保留。</li>
 <li>一个虚方法被保留，那么它父类对应方法也将被保留。</li>
-<li>一个类被保留，interface 被保留。 interface 方法被保留，该类实现 interface 方法也被保留</li>
-<li>内部类或注解如果没有使用将不会被保留。注解如果在 ClassPool 中找不到那么会被保留</li>
+<li>一个类被保留，interface 被保留。 interface 方法被保留，该类实现 interface 方法也被保留。</li>
+<li>内部类或注解如果没有使用将不会被保留。注解如果在 ClassPool 中找不到那么会被保留。</li>
 <li>方法被保留。 它的参数，行号也将被保留。</li>
 </ol>
 <ul>
-<li>Q: 如果 A 的复写了 toString() 方法 。没有被调用。 toString() 会被移除吗？<br>A: 不会  toString()  是从 rt.jar java.lang.Object 类中继承过来的。如果A被保留,那么从 LIbrary 中的继承的方法将被无条件保留下来. 即使是一个空方法.</li>
+<li>Q: 如果 A 的复写了 toString() 方法 。没有被调用。 toString() 会被移除吗？<br>A: 不会  toString()  是从 rt.jar java.lang.Object 类中继承过来的。如果 A 被保留,那么从 LIbrary 中的继承的方法将被无条件保留下来. 即使是一个空方法.</li>
 </ul>
-<h4 id="4-4-总结"><a href="#4-4-总结" class="headerlink" title="4.4 总结"></a>4.4 总结</h4><p>Shrink 只会删除没有用的类和成员，并不会裁切方法。对于没有使用的空方法或者没有修改的虚方法. 这些方法我们是可以删除的. 但是这些操作涉及到 code 指令的修改. Proguard 在这阶段并没有做这么重的操作,  部分空方法会在<code>Optimize</code> 阶段被删除,  </p>
-<h2 id="5-Optimize"><a href="#5-Optimize" class="headerlink" title="5. Optimize"></a>5. Optimize</h2><h3 id="5-1-Optimize-优化"><a href="#5-1-Optimize-优化" class="headerlink" title="5.1 Optimize 优化"></a>5.1 Optimize 优化</h3><p>Optimize 是四个阶段最为复杂的地方。也是耗时最长的阶段。<br>Optimize 会在该阶段通过对 代码指令、 堆栈, 局部变量以及数据流分析.来模拟程序运行中尽可能出现的情况. 来优化和简化代码. 为了分析的需要 Optimize  会多次遍历所有字节码。Proguard 会开启多线程来加快速度.</p>
-<h3 id="5-2-优化选项"><a href="#5-2-优化选项" class="headerlink" title="5.2 优化选项"></a>5.2 优化选项</h3><p>Proguard 定义了 33 优化项, 包含 <code>class</code>，<code>field</code>，<code>method</code>，<code>code</code> 四个纬度。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">private static final String CLASS_MARKING_FINAL                  = &quot;class/marking/final&quot;;</span><br><span class="line">private static final String CLASS_UNBOXING_ENUM                  = &quot;class/unboxing/enum&quot;;</span><br><span class="line">private static final String CLASS_MERGING_VERTICAL               = &quot;class/merging/vertical&quot;;</span><br><span class="line">private static final String CLASS_MERGING_HORIZONTAL             = &quot;class/merging/horizontal&quot;;</span><br><span class="line">private static final String CLASS_MERGING_WRAPPER                = &quot;class/merging/wrapper&quot;;</span><br><span class="line">private static final String FIELD_REMOVAL_WRITEONLY              = &quot;field/removal/writeonly&quot;;</span><br><span class="line">private static final String FIELD_MARKING_PRIVATE                = &quot;field/marking/private&quot;;</span><br><span class="line">private static final String FIELD_PROPAGATION_VALUE              = &quot;field/propagation/value&quot;;</span><br><span class="line">private static final String METHOD_MARKING_PRIVATE               = &quot;method/marking/private&quot;;</span><br><span class="line">private static final String METHOD_MARKING_STATIC                = &quot;method/marking/static&quot;;</span><br><span class="line">private static final String METHOD_MARKING_FINAL                 = &quot;method/marking/final&quot;;</span><br><span class="line">private static final String METHOD_MARKING_SYNCHRONIZED          = &quot;method/marking/synchronized&quot;;</span><br><span class="line">private static final String METHOD_REMOVAL_PARAMETER             = &quot;method/removal/parameter&quot;;</span><br><span class="line">private static final String METHOD_PROPAGATION_PARAMETER         = &quot;method/propagation/parameter&quot;;</span><br><span class="line">private static final String METHOD_PROPAGATION_RETURNVALUE       = &quot;method/propagation/returnvalue&quot;;</span><br><span class="line">private static final String METHOD_INLINING_SHORT                = &quot;method/inlining/short&quot;;</span><br><span class="line">private static final String METHOD_INLINING_UNIQUE               = &quot;method/inlining/unique&quot;;</span><br><span class="line">private static final String METHOD_INLINING_TAILRECURSION        = &quot;method/inlining/tailrecursion&quot;;</span><br><span class="line">private static final String CODE_MERGING                         = &quot;code/merging&quot;;</span><br><span class="line">private static final String CODE_SIMPLIFICATION_VARIABLE         = &quot;code/simplification/variable&quot;;</span><br><span class="line">private static final String CODE_SIMPLIFICATION_ARITHMETIC       = &quot;code/simplification/arithmetic&quot;;</span><br><span class="line">private static final String CODE_SIMPLIFICATION_CAST             = &quot;code/simplification/cast&quot;;</span><br><span class="line">private static final String CODE_SIMPLIFICATION_FIELD            = &quot;code/simplification/field&quot;;</span><br><span class="line">private static final String CODE_SIMPLIFICATION_BRANCH           = &quot;code/simplification/branch&quot;;</span><br><span class="line">private static final String CODE_SIMPLIFICATION_OBJECT           = &quot;code/simplification/object&quot;;</span><br><span class="line">private static final String CODE_SIMPLIFICATION_STRING           = &quot;code/simplification/string&quot;;</span><br><span class="line">private static final String CODE_SIMPLIFICATION_MATH             = &quot;code/simplification/math&quot;;</span><br><span class="line">private static final String CODE_SIMPLIFICATION_ADVANCED         = &quot;code/simplification/advanced&quot;;</span><br><span class="line">private static final String CODE_REMOVAL_ADVANCED                = &quot;code/removal/advanced&quot;;</span><br><span class="line">private static final String CODE_REMOVAL_SIMPLE                  = &quot;code/removal/simple&quot;;</span><br><span class="line">private static final String CODE_REMOVAL_VARIABLE                = &quot;code/removal/variable&quot;;</span><br><span class="line">private static final String CODE_REMOVAL_EXCEPTION               = &quot;code/removal/exception&quot;;</span><br><span class="line">private static final String CODE_ALLOCATION_VARIABLE             = &quot;code/allocation/variable&quot;;</span><br></pre></td></tr></table></figure></p>
-<h3 id="5-2-1-Class-纬度"><a href="#5-2-1-Class-纬度" class="headerlink" title="5.2.1 Class 纬度"></a>5.2.1 Class 纬度</h3><p><code>class/marking/final</code><br>没有派生的 类 使用 final 修饰。</p>
+<h4 id="4-4-总结"><a href="#4-4-总结" class="headerlink" title="4.4 总结"></a>4.4 总结</h4><p>Shrink 只会删除没有用的类和成员，并不会裁切方法。对于没有使用的空方法或者没有修改的虚方法. 这些方法我们是可以删除的. 但是这些操作涉及到 code 指令的修改. ProGuard 在这阶段并没有做这么重的操作,  不过部分空方法会在 <code>Optimize</code> 阶段被删除,  </p>
+<h2 id="5-Optimize"><a href="#5-Optimize" class="headerlink" title="5. Optimize"></a>5. Optimize</h2><h3 id="5-1-Optimize-优化"><a href="#5-1-Optimize-优化" class="headerlink" title="5.1 Optimize 优化"></a>5.1 Optimize 优化</h3><p>Optimize 是四个阶段最为复杂的地方。也是耗时最长的阶段。<br>Optimize 会在该阶段通过对 代码指令、 堆栈, 局部变量以及数据流分析.来模拟程序运行中尽可能出现的情况来优化和简化代码. 为了数据流分析的需要 Optimize  会多次遍历所有字节码。ProGuard 会开启多线程来加快速度。</p>
+<h3 id="5-2-优化选项"><a href="#5-2-优化选项" class="headerlink" title="5.2 优化选项"></a>5.2 优化选项</h3><p>ProGuard 定义了 33 优化项, 包含 <code>class</code>，<code>field</code>，<code>method</code>，<code>code</code> 四个纬度。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">private static final String CLASS_MARKING_FINAL                  = &quot;class/marking/final&quot;;</span><br><span class="line">private static final String CLASS_UNBOXING_ENUM                  = &quot;class/unboxing/enum&quot;;</span><br><span class="line">private static final String CLASS_MERGING_VERTICAL               = &quot;class/merging/vertical&quot;;</span><br><span class="line">private static final String CLASS_MERGING_HORIZONTAL             = &quot;class/merging/horizontal&quot;;</span><br><span class="line">private static final String CLASS_MERGING_WRAPPER                = &quot;class/merging/wrapper&quot;;</span><br><span class="line">private static final String FIELD_REMOVAL_WRITEONLY              = &quot;field/removal/writeonly&quot;;</span><br><span class="line">private static final String FIELD_MARKING_PRIVATE                = &quot;field/marking/private&quot;;</span><br><span class="line">private static final String FIELD_PROPAGATION_VALUE              = &quot;field/propagation/value&quot;;</span><br><span class="line">private static final String METHOD_MARKING_PRIVATE               = &quot;method/marking/private&quot;;</span><br><span class="line">private static final String METHOD_MARKING_STATIC                = &quot;method/marking/static&quot;;</span><br><span class="line">private static final String METHOD_MARKING_FINAL                 = &quot;method/marking/final&quot;;</span><br><span class="line">private static final String METHOD_MARKING_SYNCHRONIZED          = &quot;method/marking/synchronized&quot;;</span><br><span class="line">private static final String METHOD_REMOVAL_PARAMETER             = &quot;method/removal/parameter&quot;;</span><br><span class="line">private static final String METHOD_PROPAGATION_PARAMETER         = &quot;method/propagation/parameter&quot;;</span><br><span class="line">private static final String METHOD_PROPAGATION_RETURNVALUE       = &quot;method/propagation/returnvalue&quot;;</span><br><span class="line">private static final String METHOD_INLINING_SHORT                = &quot;method/inlining/short&quot;;</span><br><span class="line">private static final String METHOD_INLINING_UNIQUE               = &quot;method/inlining/unique&quot;;</span><br><span class="line">private static final String METHOD_INLINING_TAILRECURSION        = &quot;method/inlining/tailrecursion&quot;;</span><br><span class="line">private static final String CODE_MERGING                         = &quot;code/merging&quot;;</span><br><span class="line">private static final String CODE_SIMPLIFICATION_VARIABLE         = &quot;code/simplification/variable&quot;;</span><br><span class="line">private static final String CODE_SIMPLIFICATION_ARITHMETIC       = &quot;code/simplification/arithmetic&quot;;</span><br><span class="line">private static final String CODE_SIMPLIFICATION_CAST             = &quot;code/simplification/cast&quot;;</span><br><span class="line">private static final String CODE_SIMPLIFICATION_FIELD            = &quot;code/simplification/field&quot;;</span><br><span class="line">private static final String CODE_SIMPLIFICATION_BRANCH           = &quot;code/simplification/branch&quot;;</span><br><span class="line">private static final String CODE_SIMPLIFICATION_OBJECT           = &quot;code/simplification/object&quot;;</span><br><span class="line">private static final String CODE_SIMPLIFICATION_STRING           = &quot;code/simplification/string&quot;;</span><br><span class="line">private static final String CODE_SIMPLIFICATION_MATH             = &quot;code/simplification/math&quot;;</span><br><span class="line">private static final String CODE_SIMPLIFICATION_ADVANCED         = &quot;code/simplification/advanced&quot;;</span><br><span class="line">private static final String CODE_REMOVAL_ADVANCED                = &quot;code/removal/advanced&quot;;</span><br><span class="line">private static final String CODE_REMOVAL_SIMPLE                  = &quot;code/removal/simple&quot;;</span><br><span class="line">private static final String CODE_REMOVAL_VARIABLE                = &quot;code/removal/variable&quot;;</span><br><span class="line">private static final String CODE_REMOVAL_EXCEPTION               = &quot;code/removal/exception&quot;;</span><br><span class="line">private static final String CODE_ALLOCATION_VARIABLE             = &quot;code/allocation/variable&quot;;</span><br></pre></td></tr></table></figure></p>
+<h3 id="5-2-1-Class-纬度"><a href="#5-2-1-Class-纬度" class="headerlink" title="5.2.1 Class 纬度"></a>5.2.1 Class 纬度</h3><p><code>class/marking/final</code><br>没有派生的类使用 final 修饰。</p>
 <p><code>class/unboxing/enum</code><br>将枚举的使用转换成常量 int 的使用。<br>当枚举出现如下情况不对其优化</p>
 <ol>
 <li>枚举实现了自定义接口。并且被调用。</li>
@@ -152,9 +154,9 @@
 <li>在代码中调用静态方法 valueOf 方法。</li>
 <li>定义可以外部访问的方法。<br>优势：更小的占用内存，更快的执行效率。但条件较为苛刻。</li>
 </ol>
-<p><code>class/merging/wrapper</code><br>将只有一个 targetClass 字段类型的 wrapper 合并 targetClass class 。 targetClass 将获取 wrapper 的所有方法.。同时将 wrapper 指令调用的转成 targetClass 的指令调用。<br>wrapper 和 targetClass 满足如下条件：</p>
+<p><code>class/merging/wrapper</code><br>将只有一个 targetClass 字段类型的 wrapper class 尝试合并到 targetClass class 。 即时 targetClass 将拥有 wrapper 的所有方法.。同时将 wrapper 指令调用的转成 targetClass 的指令调用。<br>wrapper 和 targetClass 满足如下条件：</p>
 <ol>
-<li>wrapper  构造函数只有一个参数的.参数类型为  targetClass。</li>
+<li>wrapper  构造函数只有一个参数, 参数类型为  targetClass。</li>
 <li>wrapper  只有一个字段且非静态, 类型为 targetClass </li>
 <li>wrapper 和 targetClass 父类是 java/lang/Object  。</li>
 <li>wrapper 没有注解</li>
@@ -165,8 +167,8 @@
 <li>两个没有存在相同的方法。</li>
 <li>wrapper 没有子类。</li>
 </ol>
-<p>注: <code>class/merging/wrapper</code> 该项优化只会 外部类 merge 非静态内部类。 Proguard 会匹配 wrapper 的构造函数。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">this.x = arg0;</span><br><span class="line">super.&lt;init&gt;;</span><br><span class="line">return;</span><br></pre></td></tr></table></figure></p>
-<p>这是 javac 为内部类自动生成的一参构造函数。 对于非内部类的构造函数  <code>super.&lt;init&gt;;</code> 会是第一个指令。后续才是参数的赋值的指令。</p>
+<p>注: <code>class/merging/wrapper</code> 该项优化只会 <strong>外部类 merge 非静态内部类</strong>。 ProGuard 会匹配 wrapper 的构造函数。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">this.x = arg0;</span><br><span class="line">super.&lt;init&gt;;</span><br><span class="line">return;</span><br></pre></td></tr></table></figure></p>
+<p>匹配 javac 为内部类自动生成的一参构造函数。 对于非内部类的构造函数  <code>super.&lt;init&gt;;</code> 是第一个指令。后续才是字段的赋值的指令。</p>
 <p><code>class/merging/vertical</code><br>满足以下情况合并子类的方法和字段</p>
 <ol>
 <li>子类没有注解</li>
@@ -197,8 +199,8 @@
 <li>字段是恒固定值。</li>
 </ol>
 <p>通过下面例子理解一下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public  class Constant &#123;</span><br><span class="line">    public static final int field1 = 12;</span><br><span class="line">&#125;</span><br><span class="line">//优化前</span><br><span class="line">fun1(Constant.field1);</span><br><span class="line">//优化后</span><br><span class="line">fun1(12);</span><br></pre></td></tr></table></figure>
-<p>注： 如果字段被 final 修饰，Proguard 认为它是一个固定的值。 对于非 final 修饰。尽管在后续的操作中没有被修改，但 Proguard 认为字段存在一个初始值。这或许是对的。通过下面例子理解一下。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public  class Constant &#123;</span><br><span class="line">    public static final int C_1 = 12;</span><br><span class="line">&#125;</span><br><span class="line">//优化前</span><br><span class="line">fun1(Constant.C_1);</span><br><span class="line">//优化后</span><br><span class="line">fun1(12);</span><br></pre></td></tr></table></figure>
+<p>注： 如果字段被 final 修饰，ProGuard 认为它是一个固定的值。 对于非 final 修饰。尽管在后续的操作中没有被修改，但 ProGuard 认为字段存在一个初始值。这或许是对的。通过下面例子理解一下。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">public final int field1 = 12; // 固定值 12</span><br><span class="line">public int field2 = 12;// 初始值为0 ，在 init 方法中被赋值为12 。</span><br></pre></td></tr></table></figure>
 <h3 id="5-2-3-Method-纬度"><a href="#5-2-3-Method-纬度" class="headerlink" title="5.2.3  Method 纬度"></a>5.2.3  Method 纬度</h3><p><code>method/marking/private</code><br>只在申明类中使用，且没有被反射调用方法使用 private 修饰</p>
 <p><code>method/marking/static</code><br>尝试将方法使用 static 修饰<br>满足以下条件：</p>
@@ -228,7 +230,7 @@
 <li>方法 私有 或 静态 或 final 类型的方法.</li>
 <li>方法不存在递归.</li>
 <li>方法不存在加锁的</li>
-<li>方法不能有 try catch</li>
+<li>方法不存在 try catch</li>
 <li>方法没有返回值</li>
 <li>方法不能是构造方法</li>
 <li>不同类, 不能有调用 super 的方法或 invokedynamic 指令</li>
@@ -271,22 +273,22 @@
 </ol>
 <p><code>code/removal/simple</code><br>去除不会到达的代码块。 </p>
 <p><code>code/removal/variable</code><br>去除方法没有用到局部变量</p>
-<p><code>code/removal/exception</code><br>try catch 里面的代码指令不会发生异常， 移除try catch语句。</p>
+<p><code>code/removal/exception</code><br>try catch 里面的代码指令不会发生异常， 移除 try catch 语句。</p>
 <p><code>code/allocation/variable</code><br>优化局部变量的使用</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"> // 优化前 </span><br><span class="line"> String ss = &quot;99&quot;;</span><br><span class="line"> System.out.println(ss);</span><br><span class="line"> String ss1 = &quot;99&quot;;</span><br><span class="line"> System.out.println(ss1);</span><br><span class="line">// 优化后</span><br><span class="line"> String ss1 = &quot;99&quot;;</span><br><span class="line"> System.out.println(ss);</span><br><span class="line"> ss1 = &quot;99&quot;;</span><br><span class="line"> System.out.println(ss1);</span><br></pre></td></tr></table></figure>
-<p><code>code/removal/advanced</code><br>Progurad 允许删除一些没有副作用的方法指令调用。</p>
-<h5 id="实现过程"><a href="#实现过程" class="headerlink" title="实现过程"></a>实现过程</h5><p>Proguard 标记有副作用的指令和方法, 然后向上回溯标记该指令上的对象,参数,方法. 没有被标记的指令则可以被移除<br>通过下面例子理解一下:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public void func()&#123;</span><br><span class="line">/...         </span><br><span class="line">Object o = obj.funcA(a);</span><br><span class="line">/...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>方法 funcA 满足一下几点可以将被移除</p>
+<p><code>code/removal/advanced</code><br>ProGuard 允许删除一些没有副作用的方法指令调用。</p>
+<h5 id="实现过程"><a href="#实现过程" class="headerlink" title="实现过程"></a>实现过程</h5><p>ProGuard 标记有副作用的指令和方法, 然后向上回溯标记该指令上的对象,参数,方法. 没有被标记的指令则可以被移除。<br>通过下面例子理解一下:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public void func()&#123;</span><br><span class="line">/...         </span><br><span class="line">Object o = obj.funcA(a);</span><br><span class="line">/...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>方法 funcA 满足以下几点可以被移除</p>
 <ol>
-<li>funcA 的参数a不会逃逸.<br>逃逸:<br>经过 funcA 参数被其他的对象持有了.</li>
+<li>funcA 的参数a不会逃逸.<br>逃逸:<br>经过 funcA 参数被其他的对象持有了。</li>
 <li>funcA 没有外部副作用.<br>外部副作用:<br>调用了一个 native 方法或修改了一个静态对象等等. 这些操作副作用的范围已经超过 obj  范围. </li>
 <li>参数 a 在 funcA 没有被修改。 或参数 a 是一个可忽略的对象。</li>
 <li>obj 在 funcA 没有被修改, 或 obj 是一个可忽略的对象。<br>修改:<br>对象的字段经过 funcA 发生了变化。<br>可忽略对象：<br>对象赋值是可忽略的。没有成为有副作用方法的参数. </li>
 <li>返回值 o 没有成为有副作用方法的参数.</li>
-<li>返回值 o 没有成为 func 的 return 的</li>
+<li>返回值 o 没有成为 func 的返回值</li>
 <li>返回值 0 没有被 thow 抛出.</li>
 </ol>
-<p>Proguard 对于 Library 中的方法做最坏的打算, 参数会发生逃逸。方法有外部副作用。对象和参数会被修改。返回值是一个外部引用。不满足条件 1,2,3,4.  Proguard 提供声明修改它们的影响。 对于 library 来说，  Progurad 不会分析其内部代码指令。直接按照申明确定他们的副作用影响。 对于程序中的方法。会对方法内部指令进行分析计算它们的副作用范围。开发者可以根据需要使用声明修改它的副作用影响。<br>声明方式如下:</p>
+<p>ProGuard 对于 Library 中的方法做最坏的打算, 参数会发生逃逸。方法有外部副作用。对象和参数会被修改。返回值是一个外部引用。不满足条件 1,2,3,4.  Proguard 提供<code>声明</code>来修改它们的副作用影响范围。 对于 Library 来说，  ProGuard 不会分析其内部代码指令。直接按照声明确定他们的副作用影响。 对于程序中的方法。会对方法内部指令进行分析计算副作用影响。开发者可以根据需要使用<code>声明</code>修改它的副作用影响。<br>声明方式如下:</p>
 <table>
 <thead>
 <tr>
@@ -299,65 +301,65 @@
 <tr>
 <td>-assumenosideeffects</td>
 <td>hasNoSideEffects ,hasNoExternalSideEffects hasNoEscapingParameters</td>
-<td>没有外部影响,  没有方法参数逃逸,没有参数和对象被修改</td>
+<td>没有外部影响,  没有参数逃逸,没有参数和对象被修改</td>
 </tr>
 <tr>
 <td>-assumenoexternalsideeffects</td>
 <td>hasNoExternalSideEffects hasNoEscapingParameters</td>
-<td>没有外部影响,没有方法参数逃逸,没有参数被修改</td>
+<td>没有外部影响,没有参数逃逸,没有参数被修改</td>
 </tr>
 <tr>
 <td>-assumenoescapingparameters</td>
 <td>hasNoEscapingParameters</td>
-<td>没有方法参数逃逸</td>
+<td>没有参数逃逸</td>
 </tr>
 <tr>
 <td>-assumenoexternalreturnvalues</td>
 <td>hasNoExternalReturnValues</td>
-<td>返回值是参数或者新对象</td>
+<td>返回值是参数或新对象</td>
 </tr>
 </tbody>
 </table>
-<p><code>-assumenosideeffects</code>声明:<br>被声明的方法将满足条件1,2,3,4. 当返回值满足条件 5,6,7, 那么该方法调用指令将被删除.<br><code>assumenoexternalsideeffects</code>声明:<br>被声明的方法将满足条件1,2,3;</p>
+<p><code>-assumenosideeffects</code>声明:<br>被声明的方法将满足条件1,2,3,4. 当返回值满足条件 5,6,7, 那么该方法调用指令将被删除.<br><code>assumenoexternalsideeffects</code>声明:<br>被声明的方法将满足条件1,2,3。</p>
 <p><code>-assumenoexternalreturnvalues</code>声明<br>方法返回值有三种情况：</p>
 <ol>
-<li>返回值的是入参</li>
+<li>返回值的是入参。</li>
 <li>返回值一个新对象实例。该对象在方法内被实例化。</li>
-<li>返回值是的外部引用。 一般为堆上某个引用的字段实例。<br>这三种情况， 第三种返回值是一个不可被忽略的对象。<br>assumenoexternalreturnvalues 申明表示返回值是一个新对象实例或者参数。 是一个可以被忽略的对象， 后续中如果该对象满足567 ， 那么该对象为不可忽略的对象。</li>
+<li>返回值是的外部引用。 一般为堆上某个引用的字段实例。<br>这三种情况， 第三种返回值是一个不可被忽略的对象。<br>assumenoexternalreturnvalues 声明表示返回值是一个新对象实例或者参数。 是一个可以被忽略的对象， 后续中如果该返回值满足 567 ， 那么该对象为不可忽略的对象。</li>
 </ol>
-<p>通过 Proguard 的例子，理解一下声明的作用。</p>
+<p>通过 ProGuard 的例子，理解一下声明的作用。</p>
 <h5 id="例子1"><a href="#例子1" class="headerlink" title="例子1"></a>例子1</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">声明</span><br><span class="line">-assumenoexternalsideeffects class java.lang.StringBuilder &#123;</span><br><span class="line">    public java.lang.StringBuilder();</span><br><span class="line">    public java.la·ng.StringBuilder append(java.lang.String);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">方法块1：</span><br><span class="line">new StringBuilder().append(&quot;dd&quot;)</span><br><span class="line">方法块2：</span><br><span class="line">new StringBuilder().append(&quot;dd&quot;).append(&quot;ddd&quot;);</span><br></pre></td></tr></table></figure>
-<p>方法块1 将被删除<br>因为使用 assumenoexternalsideeffects 声明了两个方法 StringBuilder() 和 append() 方法。<br>new StringBuilder() 返回的是一个可忽略的对象。append() 满足以上条件，所以调用也是一个没有副作用的操作。<br>方法块2 将被保留<br>因为在第二个 append 的时候， 调用者是由第一个 append 方法返回的一个外部引用。满足123， 不满足4，所以  append 方法调用存在副作用，第二个 append 方法被保留。  Proguard 会向上回溯标记相关参数对象和方法。导致方法块2整体被保留了。</p>
+<h6 id="结果："><a href="#结果：" class="headerlink" title="结果："></a>结果：</h6><p>方法块1 被删除<br>因为使用 assumenoexternalsideeffects 声明了两个方法 StringBuilder() 和 append() 方法。<br>new StringBuilder() 返回的是一个可忽略的对象。append() 满足以上条件，所以调用也是一个没有副作用的操作。<br>方法块2 被保留<br>因为在第二个 append 方法的时候， 调用者是由第一个 append 方法返回的一个外部引用。满足123， 不满足4，所以  append 方法调用存在副作用，第二个 append 方法被保留。  ProGuard 向上回溯标记相关参数对象和方法。最终 方法块2 整体被保留了。</p>
 <h5 id="例子2"><a href="#例子2" class="headerlink" title="例子2"></a>例子2</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">声明</span><br><span class="line">-assumenoexternalsideeffects class java.lang.StringBuilder &#123;</span><br><span class="line">    public java.lang.StringBuilder();</span><br><span class="line">    public java.lang.StringBuilder append(java.lang.String);</span><br><span class="line">&#125;</span><br><span class="line">-assumenoexternalreturnvalues class java.lang.StringBuilder &#123;</span><br><span class="line">    public java.lang.StringBuilder append(java.lang.String);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>方法块2 将被删除<br><code>assumenoexternalreturnvalues</code> 将 append 返回值声明为非外部引用。将满足条件1234567</p>
+<h6 id="结果：-1"><a href="#结果：-1" class="headerlink" title="结果："></a>结果：</h6><p>方法块2 被删除<br><code>assumenoexternalreturnvalues</code> 将 append 返回值声明为非外部引用。将满足条件1234567。调用不存在副作用。</p>
 <h5 id="例子3"><a href="#例子3" class="headerlink" title="例子3"></a>例子3</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">配置</span><br><span class="line">-assumenosideeffects class java.lang.StringBuilder &#123;</span><br><span class="line">    public java.lang.StringBuilder();</span><br><span class="line">    public java.lang.StringBuilder append(java.lang.String);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>方法块2 将被删除<br><code>assumenosideeffects</code> 声明屏蔽了 StringBuilder 自身的修改。 满足了条件4，同时满足条件 123567</p>
+<h6 id="结果：-2"><a href="#结果：-2" class="headerlink" title="结果："></a>结果：</h6><p>方法块2 被删除<br><code>assumenosideeffects</code> 声明屏蔽了 StringBuilder 自身的修改。 满足了条件4，同时满足条件 123567。 调用不存在副作用。</p>
 <h3 id="5-3-优化副作用"><a href="#5-3-优化副作用" class="headerlink" title="5.3 优化副作用"></a>5.3 优化副作用</h3><ul>
 <li>反编译问题: 优化中会使用上 pop，pop2 ，swap，等指令， 这个将会导致反编译不能编译出相对应语义的 代码。</li>
 <li>定位问题：部分优化带来行号偏移的问题和 SourceFile 丢失。</li>
 </ul>
-<p>注: 以上总结均基于 Proguard 6.0.3 的源码。省略了部分条件和情况, 因为太过于复杂.以及描述不清</p>
-<h3 id="5-4-总结"><a href="#5-4-总结" class="headerlink" title="5.4  总结"></a>5.4  总结</h3><p>Optimize 阶段是 Proguard 几个阶段中着墨最多的， 代码量也是最多最为复杂的。 整体耗时也是最长， 即使其他几个阶段的耗时加起来也比不上 Optimize 的耗时的一半， 但这阶段却也是最容易被忽略的阶段。</p>
-<h2 id="6-Obfuscate"><a href="#6-Obfuscate" class="headerlink" title="6. Obfuscate"></a>6. Obfuscate</h2><h3 id="6-1-Obfuscate-处理过程"><a href="#6-1-Obfuscate-处理过程" class="headerlink" title="6.1 Obfuscate 处理过程"></a>6.1 Obfuscate 处理过程</h3><p>将类,字段,方法的名称简化成短名字, 简化需要依据 java 的规范, 方法名应符合定义没有非法字符. 虚方法在class 继承中方法名称保持一致. 同个范围内字段或方法描述符,签名相同的时候名称唯一, 相同包下 class 名称唯一. 从 library 中继承的方法名称不变.</p>
+<p>注: 以上总结均基于 ProGuard 6.0.3 的源码。省略了部分条件和情况, 因为太过于复杂.以及描述不清</p>
+<h3 id="5-4-总结"><a href="#5-4-总结" class="headerlink" title="5.4  总结"></a>5.4  总结</h3><p>Optimize 阶段是 ProGuard 几个阶段中着墨最多的， 代码量也是最多最为复杂的。 整体耗时也是最长， 即使其他几个阶段的耗时加起来也比不上 Optimize 的耗时的一半， 但这阶段却也是最容易被忽略的阶段。</p>
+<h2 id="6-Obfuscate"><a href="#6-Obfuscate" class="headerlink" title="6. Obfuscate"></a>6. Obfuscate</h2><h3 id="6-1-Obfuscate-处理过程"><a href="#6-1-Obfuscate-处理过程" class="headerlink" title="6.1 Obfuscate 处理过程"></a>6.1 Obfuscate 处理过程</h3><p>将类,字段,方法的名称简化成短名字, 简化需要依据 java 的规范, 方法名应符合定义没有非法字符. 虚方法在 class 继承中方法名称保持一致. 同个范围内字段或方法描述符,签名相同的时候名称唯一, 相同包下 class 名称唯一. 从 library 中继承的方法名称不变等等。</p>
 <h3 id="6-2-Obfuscate-参数"><a href="#6-2-Obfuscate-参数" class="headerlink" title="6.2 Obfuscate 参数"></a>6.2 Obfuscate 参数</h3><p><code>-applymapping</code><br>应用映射规则。</p>
 <p><code>-useuniqueclassmembernames</code><br>混淆时候为类成员生成全局唯一的名称。<br>相同的 字段描述符 的字段 拥有全局唯一的名称。<br>相同的 方法描述符 的方法 拥有全局唯一的名称。</p>
-<p><code>-overloadaggressively</code><br>该选项是一个更为激进的选项， 他允许在同一个类中，一个不同类型的字段拥有相同的名字。相同入参不同返回类型拥有相同名称。 这个选项可以让 class 的大小更小。</p>
-<p><code>-keepparameternames</code><br>如果你保留本地变量表。 那么它会只保留参数的本地变量表。</p>
+<p><code>-overloadaggressively</code><br>该选项是一个更为激进的选项， 他允许在同一个类中，一个不同类型的字段拥有相同的名字。相同入参不同返回类型拥有相同名称。 这个选项可以让 class 的大小更小。但是对于反编译是一个灾难。</p>
+<p><code>-keepparameternames</code><br>在保留本地变量表基础上。 只保留参数的变量表。</p>
 <p><code>-repackageclasses</code> x<br><code>-defaultpackage</code> x<br>将混淆的类的包名替换为x。 加大逆向分析的成本</p>
 <p><code>-flattenpackagehierarchy</code> x<br>将混淆的类的包名以x 为前缀扁平化。 加大逆向分析的成本。</p>
 <p><code>-packageobfuscationdictionary</code><br>混淆包名字典</p>
 <p><code>-classobfuscationdictionary</code><br>混淆类和成员字典<br><code>-renamesourcefileattribute</code> x<br> SourceFile 属性值重置为 x</p>
 <h2 id="7-Preverify"><a href="#7-Preverify" class="headerlink" title="7. Preverify"></a>7. Preverify</h2><p>对 java code 进行预校验。 主要校验 StackMap /StackMapTable 属性。android 虚拟机字节码校验不基于StackMap /StackMapTable。</p>
-<h1 id="0x02-Proguard-在-Android-上运用："><a href="#0x02-Proguard-在-Android-上运用：" class="headerlink" title="0x02 Proguard 在 Android 上运用："></a>0x02 Proguard 在 Android 上运用：</h1><h2 id="1-Proguard-Rules"><a href="#1-Proguard-Rules" class="headerlink" title="1. Proguard Rules"></a>1. Proguard Rules</h2><p>Android 开启 Proguard<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">release &#123;</span><br><span class="line">        minifyEnabled true</span><br><span class="line">        shrinkResources true</span><br><span class="line">        proguardFiles getDefaultProguardFile(&apos;proguard-android.txt&apos;), &apos;proguard-rules.pro&apos;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure></p>
+<h1 id="0x02-ProGuard-在-Android-上运用："><a href="#0x02-ProGuard-在-Android-上运用：" class="headerlink" title="0x02 ProGuard 在 Android 上运用："></a>0x02 ProGuard 在 Android 上运用：</h1><h2 id="1-ProGuard-Rule"><a href="#1-ProGuard-Rule" class="headerlink" title="1. ProGuard Rule"></a>1. ProGuard Rule</h2><p>Android 开启 ProGuard<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">release &#123;</span><br><span class="line">        minifyEnabled true</span><br><span class="line">        shrinkResources true</span><br><span class="line">        proguardFiles getDefaultProguardFile(&apos;proguard-android.txt&apos;), &apos;proguard-rules.pro&apos;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure></p>
 <ul>
-<li>minifyEnabled:  开启 代码收敛， 默认使用 proguard  方式。</li>
-<li>proguardFiles：定义 proguard rule。</li>
+<li>minifyEnabled:  开启代码收敛， 默认使用 ProGuard  方式。</li>
+<li>proguardFiles：定义 ProGuard rule。</li>
 </ul>
-<p>proguard rules 的来源主要分为 4 类：</p>
+<p>ProGuard rules 的来源主要分为 4 类：</p>
 <ul>
 <li>预置 rules：默认有三种 proguard-android.txt, proguard-android-optimize.txt,proguard-defaults.txt， 在 Gradle 在编译的时候通过任务 <code>extractProguardFiles</code> 将预置在依赖 <code>com.android.tools.build:gradle-core</code> java resource  的 rules 解压到根项目 build/intermediates/proguard-files 文件下。<br><img src="https://upload-images.jianshu.io/upload_images/166866-890d243471649497.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"> 默认引入的是 <code>proguard-android.txt</code> 。 该项关闭了 Optimize。如果想开启Optimize 可以引用<code>proguard-android-optimize.txt</code>或者不使用预置的 rules 。</li>
 <li>project rules：定义在主工程的 rules</li>
-<li>aar rules：每个 library 可以携带关于自身的一份 rules。</li>
+<li>aar rules：每个 library 携带关于自身的一份 rules。</li>
 <li>aapt_rules：aapt 在为资源时候生成。</li>
 </ul>
 <h2 id="2-应用"><a href="#2-应用" class="headerlink" title="2. 应用"></a>2. 应用</h2><h3 id="2-1-R-文件内联："><a href="#2-1-R-文件内联：" class="headerlink" title="2.1 R 文件内联："></a>2.1 R 文件内联：</h3><p>Android 中 R 文件是标识资源 ID， Resource 可以根据标识资源 ID查找对应的资源。 R 文件分为两种， </p>
@@ -368,25 +370,25 @@
 <p>我们可以通过删除 R 文件来减小包大小。 主工程的 R 文件可以直接删除。 对于Library 中的 R 文件需要先内联。然后再删除。<br>方案:</p>
 <ol>
 <li>通过自定义 Android Gradle Transform Api 来实现。内联和删除 R 文件。</li>
-<li>使用 Proguard 来做内联和删除的优化。通过优化项<code>field/propagation/value</code> 来实现。  Proguard 这获取是一个更为优雅的选择。</li>
+<li>使用 Proguard 来做内联和删除的优化。通过优化项<code>field/propagation/value</code> 来实现。  ProGuard 这获取是一个更为优雅的选择。代价是 <code>Optimize</code> 的耗时。</li>
 </ol>
 <h3 id="2-2-API-检查"><a href="#2-2-API-检查" class="headerlink" title="2.2 API 检查"></a>2.2 API 检查</h3><p>在上次文章 <a href="https://dim.red/2018/11/03/gradle_configuration_exploration/">Gradle Configuration</a> 分析的中可以发现 Gradle 对依赖版本的判断是不可靠的。我们需要在最后阶段进行 API 检查。  防止出现  NoSuchMethodException, NoSuchFieldException,ClassNotFoundException 等异常。 </p>
 <ol>
-<li><p>方案一<br>结合 -dontwarn 参数，记录 Initialize 阶段连接中出现缺失的类和字段或者方法。但是 Initialize 的时候。ProgramClass 的 ClassPool 的部分类和方法会在 Shrink 删除。 对于它们的检查是多余的。他们的错误也是可以被忽略的.</p>
+<li><p>方案一<br>结合 -dontwarn 参数，记录 Initialize 阶段连接中出现缺失的类和字段或者方法。但是 Initialize 的时候。程序的 ClassPool 的部分类和方法会在 Shrink 阶段被删除。 对于它们的检查是多余的。他们的错误也是可以被忽略的.</p>
 </li>
-<li><p>方案二<br>Shrink 阶段后。重新连接 ClassPool 的 ProgramClass 。 记录其中的缺失的类和字段或者方法。相对于方案一, 方案二需要基于Proguard 源码进行扩展.</p>
+<li><p>方案二<br>Shrink 阶段后。重新连接 ClassPool 。 记录其中的缺失的类和字段或者方法。相对于方案一, 方案二需要基于ProGuard 源码进行扩展。</p>
 </li>
 </ol>
-<h3 id="2-3-瘦身"><a href="#2-3-瘦身" class="headerlink" title="2.3 瘦身"></a>2.3 瘦身</h3><p>progurad 应该是 apk 瘦身第一大利器。主要是在四方面。</p>
+<h3 id="2-3-瘦身"><a href="#2-3-瘦身" class="headerlink" title="2.3 瘦身"></a>2.3 瘦身</h3><p>ProGuard 应该是 APK 瘦身第一大利器。主要是在四方面。</p>
 <ol>
 <li>类和方法，字段的删除。（Shirk）</li>
 <li>字节码的优化。（Optimize）</li>
 <li>字节码 中 Attributes 属性的删除。（Obfuscate）</li>
 <li>名称的简化。（Obfuscate）</li>
 </ol>
-<p>Proguard 是在 rule 规则上做优化。 rule 的范围越窄，那么优化的效果就越明显。我们尽可能的优化 rule 来达到最大化的优化的结果。除了在定义的时候特别注意写法。 同时可以优化 aapt_rule 来做更为极致的优化。aapt_rule 是由 aapt 工具在生成 arsc 资源时候生成 rule。 该 rule  是一个较为保守的方案。 它涵盖了所有 资源中可能出现的情况。 但是有些资源是在代码中永远不会被使用到。所以根据没有用到的资源生成的 rule 也是一个冗余的 rule 。通过以下情况了解一下。<br><img src="https://upload-images.jianshu.io/upload_images/166866-4473b4a3ec257667.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"><br>情况1：只有 app 代码。 通过 Proguard 之后 jar 的大小 3 KB<br>情况2：有 app 代码，引入了<code>appcompat-v7:28.0.0</code> 依赖。 但是没有使用 v7 的代码或者资源， 通过混淆之后 jar 大小为 612 KB。<br>情况3：有 app 代码和 <code>appcompat-v7:28.0.0</code> 依赖，没有使用 v7 的代码或资源。 收敛了 aapt_rules 。 混淆之后 jar 大小为 29 KB。之所以没有办法达到情况1  中 3 KB原因在于引入了 v7 的同时引入了 v7 的 aar_rules.</p>
+<p>ProGuard 是在 rule 规则上做优化。 rule 的范围越窄，那么优化的效果就越明显。我们尽可能的优化 rule 来达到最大化的优化的结果。除了在定义的时候特别注意范围。 同时可以优化 aapt_rule 来做更为极致的优化。aapt_rule 是由 aapt 工具在生成 arsc 资源时候生成 rule。 该 rule  是一个较为保守的方案。 它涵盖了所有 资源中可能出现的情况。 因为有些资源是在代码中永远不会被使用到。所以根据没有用到的资源生成的 rule 也是一个冗余的 rule 。通过以下情况了解一下具体情况。<br><img src="https://upload-images.jianshu.io/upload_images/166866-4473b4a3ec257667.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"><br>情况1：只有 app 代码。 通过 ProGuard 之后 jar 的大小 3 KB<br>情况2：有 app 代码，引入了<code>appcompat-v7:28.0.0</code> 依赖。 但是没有使用 v7 的代码或者资源， 通过  ProGuard 之后 jar 大小为 612 KB。<br>情况3：有 app 代码和 <code>appcompat-v7:28.0.0</code> 依赖，没有使用 v7 的代码或资源。 收敛了 aapt_rules 。  ProGuard 之后 jar 大小为 29 KB。之所以没有办法达到情况1  中 3 KB原因在于引入了 v7 的同时引入了 v7 的 aar_rules.</p>
 <p>注：  aapt_rules 收敛以后瘦身的效果还受到其他因素的影响。 </p>
-<h1 id="0x03-Proguard-rule-优化建议"><a href="#0x03-Proguard-rule-优化建议" class="headerlink" title="0x03 Proguard rule 优化建议"></a>0x03 Proguard rule 优化建议</h1><ol>
+<h1 id="0x03-ProGuard-rule-优化建议"><a href="#0x03-ProGuard-rule-优化建议" class="headerlink" title="0x03 ProGuard rule 优化建议"></a>0x03 ProGuard rule 优化建议</h1><ol>
 <li>尽可能使用 keepnames 替代 keep</li>
 <li>不使用 -ignorewarnings </li>
 <li>rule 范围尽可能小 </li>
@@ -399,13 +401,13 @@
 <li>四大组件和 View 交给 aapt 生成。 </li>
 <li>去除多余的 Attributes（RuntimeInvisibleAnnotations，LocalVariableTypeTable…） </li>
 </ol>
-<h1 id="0x04-尾巴"><a href="#0x04-尾巴" class="headerlink" title="0x04 尾巴"></a>0x04 尾巴</h1><p>我们往往使用 混淆 来表示 Progurad， 这是有失偏颇。 混淆只是Progurad 的一个功能。总体来说 Progurad 是一个特别优秀的框架。拥有完整的 java 1－10 字节码解析。完整的字节码操作模拟。但是较为复杂的 Optimize 代码还不稳定。耗时较长。部分优化实现相对保留。通过对 Progurad 的理解和学习会对于以往使用运气编程有所改善。 </p>
-<h1 id="0x05-其他"><a href="#0x05-其他" class="headerlink" title="0x05 其他"></a>0x05 其他</h1><p><code>-whyareyoukeeping</code>: 可以通过该选项在 debug 的时候。 定位类被保留的原因。 正常情况下不建议开启。会延长 proguard 时长。<br><code>-printconfiguration</code>: 聚合 Proguard 的所有配置<br><code>-addconfigurationdebugging</code>： 有效的定位反射导致的问题。<br>必要的属性:<br><code>-keepattributes LineNumberTable,Signature,RuntimeVisibleAnnotations,RuntimeVisibleParameterAnnotations,AnnotationDefault</code></p>
+<h1 id="0x04-尾巴"><a href="#0x04-尾巴" class="headerlink" title="0x04 尾巴"></a>0x04 尾巴</h1><p>我们往往使用 混淆 来代表 ProGuard， 这有失偏颇。 混淆只是 ProGuard 的其中一功能。远远不能来代表 ProGuard 。总体来说 ProGuard 是一个特别优秀的框架。拥有完整的 Java 1－10 字节码解析。完整的字节码操作模拟。但是较为复杂的 Optimize 代码还不稳定。耗时较长。部分优化实现相对保留。通过对 ProGuard 的理解和学习会对于以往使用运气编程情况有所改善。 </p>
+<h1 id="0x05-其他"><a href="#0x05-其他" class="headerlink" title="0x05 其他"></a>0x05 其他</h1><p><code>-whyareyoukeeping</code>: 可以通过该选项在 Debug 的时候。 定位类被保留的原因。 正常情况下不建议开启。会延长 proguard 时长。<br><code>-printconfiguration</code>: 聚合 ProGuard 的所有rules 输出到具体文件上。<br><code>-addconfigurationdebugging</code>： 有效的定位反射导致的问题。<br>必要的属性:<br><code>-keepattributes LineNumberTable,Signature,RuntimeVisibleAnnotations,RuntimeVisibleParameterAnnotations,AnnotationDefault</code></p>
 <h1 id="0x06-相关连接"><a href="#0x06-相关连接" class="headerlink" title="0x06 相关连接"></a>0x06 相关连接</h1><ol>
 <li><a href="https://docs.oracle.com/javase/specs/jvms/se10/html/index.html" target="_blank" rel="noopener">The Java® Virtual Machine Specification</a></li>
 <li><a href="https://dim.red/2018/11/03/gradle_configuration_exploration/">Gradle Configuration</a></li>
 </ol>
-</div></article></div></main><footer><div class="paginator"><a href="/2018/11/20/flutter_dy_exploration/" class="next">NEXT</a></div><div id="disqus_thread"></div><script>var disqus_shortname = 'dimredblog';
+</div></article></div></main><footer><div class="paginator"><a href="/2018/11/20/flutter_dy_exploration/" class="next">下一篇</a></div><div id="disqus_thread"></div><script>var disqus_shortname = 'dimredblog';
 var disqus_identifier = '2019/01/28/proguard_exploration/';
 var disqus_title = 'ProGuard 初探';
 var disqus_url = 'http://dim.red/2019/01/28/proguard_exploration/';
