@@ -2,9 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://dim.red/2018/11/18/android_reference_exploration/</loc>
+    
+    <lastmod>2019-03-03T16:51:24.535Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://dim.red/2019/03/03/scrcpy_usage/</loc>
     
-    <lastmod>2019-03-02T17:39:43.110Z</lastmod>
+    <lastmod>2019-03-03T16:51:22.091Z</lastmod>
     
   </url>
   
@@ -19,13 +26,6 @@
     <loc>http://dim.red/2018/01/28/media/proguard_exploration/</loc>
     
     <lastmod>2019-01-27T16:38:21.008Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://dim.red/2018/11/18/android_reference_exploration/</loc>
-    
-    <lastmod>2018-11-20T13:04:39.381Z</lastmod>
     
   </url>
   

@@ -8,8 +8,8 @@
 </li>
 <li><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/ref/PhantomReference.html" target="_blank" rel="noopener">虚引用(PhantomReference)</a>：在 GC 中如果发现是一个幽灵引用的时候，GC 会回收这些对象。</li>
 </ul>
-<p>总结： 强引用在任何情况都不会被回收。软引用在 GC 可以被回收。弱引用和虚引用在 GC 中会尽可能回收。<br><a id="more"></a></p>
-<h1 id="GC-流程简介"><a href="#GC-流程简介" class="headerlink" title="GC 流程简介"></a>GC 流程简介</h1><p>Android GC 主要分为 标记 和 清除 阶段、 通过定义两个 Bitmap， Live Bitmap 和 Mark Bitmap ， 前者表示上次 GC 存活的对象。后者表示这次 GC 存活的对象。 Mark Bitmap 存在 而 Live Bitmap 不存在的为当前 GC 回收的对象。 GC 结束的时候将  Mark Bitmap  设置为 Live Bitmap。 不管并行还是串行GC， 或者 ART 的 GC 基本流程类似。</p>
+<p>总结： 强引用在任何情况都不会被回收。软引用在 GC 可以被回收。弱引用和虚引用在 GC 中会尽可能回收。</p>
+<h1 id="GC-流程简介"><a href="#GC-流程简介" class="headerlink" title="GC 流程简介"></a>GC 流程简介</h1><p>Android GC 主要分为 标记 和 清除 阶段、 通过定义两个 Bitmap， Live Bitmap 和 Mark Bitmap ， 前者表示上次 GC 存活的对象。后者表示这次 GC 存活的对象。 Mark Bitmap 存在 而 Live Bitmap 不存在的为当前 GC 回收的对象。 GC 结束的时候将  Mark Bitmap  设置为 Live Bitmap。 不管并行还是串行GC， 或者 ART 的 GC 基本流程类似。<br><a id="more"></a></p>
 <h2 id="Reference-状态。"><a href="#Reference-状态。" class="headerlink" title="Reference 状态。"></a>Reference 状态。</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public abstract class Reference&lt;T&gt; &#123;</span><br><span class="line">    ...</span><br><span class="line">    volatile T referent; </span><br><span class="line"></span><br><span class="line">    final ReferenceQueue&lt;? super T&gt; queue; </span><br><span class="line"></span><br><span class="line">    Reference queueNext;</span><br><span class="line"></span><br><span class="line">    Reference&lt;?&gt; pendingNext;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>参数介绍：</p>
 <ul>
