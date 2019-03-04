@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://dim.red/2018/03/31/plugin_framework_%20exploration/</loc>
+    
+    <lastmod>2019-03-04T16:45:29.124Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://dim.red/2019/03/03/scrcpy_usage/</loc>
     
     <lastmod>2019-03-04T06:03:55.442Z</lastmod>
@@ -96,13 +103,6 @@
     <loc>http://dim.red/2016/03/07/rv_lv_cmp/</loc>
     
     <lastmod>2018-08-25T08:43:17.089Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://dim.red/2018/03/31/plugin_framework_%20exploration/</loc>
-    
-    <lastmod>2018-08-25T08:43:17.076Z</lastmod>
     
   </url>
   
