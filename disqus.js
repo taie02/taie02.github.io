@@ -65,6 +65,7 @@
          */
         const get = (url, success, error) => {
             let xhr = new XMLHttpRequest()
+            xhr.setRequestHeader('Access-Control-Allow-Origin', '*');
             xhr.open('GET', encodeURI(url), true);
             xhr.onload = () => {
                 if (xhr.status >= 200 && xhr.status < 300 || xhr.status === 304) {
