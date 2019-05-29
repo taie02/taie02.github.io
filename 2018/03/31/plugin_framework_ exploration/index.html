@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 插件化方案对比 · dim's blog</title><meta name="description" content="插件化方案对比 - Dim"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://dim.red/atom.xml" title="dim's blog"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">博客</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">文章</a></li><li class="nav-list-item"><a href="/about/" target="_self" class="nav-list-link">关于</a></li><li class="nav-list-item"><a href="/atom.xml" target="_self" class="nav-list-link">RSS</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">插件化方案对比</h1><div class="post-info">Mar 31, 2018</div><div class="post-content"><p><a href="http://dim.red">dim.red</a></p>
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 插件化方案对比 · dim's blog</title><meta name="description" content="插件化方案对比 - Dim"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="stylesheet" href="/css/disqusjs.css"><link rel="search" type="application/opensearchdescription+xml" href="http://dim.red/atom.xml" title="dim's blog"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">博客</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">文章</a></li><li class="nav-list-item"><a href="/about/" target="_self" class="nav-list-link">关于</a></li><li class="nav-list-item"><a href="/atom.xml" target="_self" class="nav-list-link">RSS</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">插件化方案对比</h1><div class="post-info">Mar 31, 2018</div><div class="post-content"><p><a href="http://dim.red">dim.red</a></p>
 <h1 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h1><p>市面上的插件化，已经百花齐放，趋于完善。<br>主流的开源框架主要的代表有 Alibaba 的 Atlas , 360 的 Replugin 和 DIDI 的 VirtualAPK 。<br>实现插件化的技术难点</p>
 <ul>
 <li>代码的加载:</li>
@@ -55,12 +55,10 @@
 <li>不支持插件依赖</li>
 <li>需要一个 GuardService 进程，用于管理插件信息。</li>
 </ul>
-</div></article></div></main><footer><div class="paginator"><a href="/2018/05/03/dylog_exploration/" class="prev">PREV</a><a href="/2018/02/05/android_dependency_analyse_code/" class="next">NEXT</a></div><div id="disqus_thread"></div><script>var disqus_shortname = 'dimredblog';
-var disqus_identifier = '2018/03/31/plugin_framework_ exploration/';
-var disqus_title = '插件化方案对比';
-var disqus_url = 'http://dim.red/2018/03/31/plugin_framework_ exploration/';
-(function() {
-    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-})();</script><script id="dsq-count-scr" src="//dimredblog.disqus.com/count.js" async></script><div class="copyright"><p>© 2015 - 2019 <a href="http://dim.red">Dim</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script></body></html>
+</div></article></div></main><footer><div class="paginator"><a href="/2018/05/03/dylog_exploration/" class="prev">PREV</a><a href="/2018/02/05/android_dependency_analyse_code/" class="next">NEXT</a></div><div id="disqus_thread"></div><script src="/disqus.js"></script><script>var dsqjs = new DisqusJS({
+shortname: 'dimredblog', 
+identifier: '2018/03/31/plugin_framework_ exploration/',
+url: 'http://dim.red/2018/03/31/plugin_framework_ exploration/', 
+api: 'https://disqus.skk.moe/disqus/', 
+apikey: 'MvtREFDD6pEIlmM1eqv3vACcJYJSAXfmfgYO4tlVfvgqlPSeE4xhPLQE0YXAbBBe'
+});</script><div class="copyright"><p>© 2015 - 2019 <a href="http://dim.red">Dim</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script></body></html>
