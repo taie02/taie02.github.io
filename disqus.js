@@ -81,7 +81,6 @@
             xhr.onerror = (e) => {
                 error(e);
             };
-            xhr.setRequestHeader('Access-Control-Allow-Origin', '*');
             xhr.send();
         }
 

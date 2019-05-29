@@ -17,7 +17,7 @@
 <h1 id="0x04-问题"><a href="#0x04-问题" class="headerlink" title="0x04 问题"></a>0x04 问题</h1><p>Q : javac 编译失败.<br>A: 当你 java 调用的方法不在原有的 jar 中, 导致 javac 编译的时候找不到对应的方法,抛出异常.<br>解决方式:使用 asm 对 jar 中进行指令分析, 对指令 invokestatic, invokevirtual , invokeinterface , invokedynamic ( android 上可以忽略这个指令)  和 getfield , getstatic 指令的分析. 我们可以生成一个空的实现的jar , 来为 javac 编译提供环境支持.</p>
 <p>Q : 内部类的问题.<br>A: 匿名内部的生成的规则是 <code>外部类类名$Number</code>. Number 是在源码中出现的位置. 当你新增和调整位置的时候会导致生成的类和之前的类不匹配. 解决方式. 在对外部类操作的时候, 直接对匿名内部类进行删除. 等 javac 命令的生成新的内部类直接替换进去.</p>
 <h1 id="0x05-改进"><a href="#0x05-改进" class="headerlink" title="0x05 改进"></a>0x05 改进</h1><p>通过和 idea  结合提供一整套的解决方案. </p>
-</div></article></div></main><footer><div class="paginator"><a href="/2018/08/24/gradle_task_UP-TO-DATE/" class="prev">PREV</a><a href="/2018/05/03/dylog_exploration/" class="next">NEXT</a></div><div id="disqus_thread"></div><script src="/disqus.js"></script><script>var dsqjs = new DisqusJS({
+</div></article></div></main><footer><div class="paginator"><a href="/2018/08/24/gradle_task_UP-TO-DATE/" class="prev">上一篇</a><a href="/2018/05/03/dylog_exploration/" class="next">下一篇</a></div><div id="disqus_thread"></div><script src="/disqus.js"></script><script>var dsqjs = new DisqusJS({
 shortname: 'dimredblog', 
 identifier: '2018/05/13/idea_by_modify/',
 url: 'http://dim.red/2018/05/13/idea_by_modify/', 
