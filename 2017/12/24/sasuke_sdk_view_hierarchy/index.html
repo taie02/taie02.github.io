@@ -6,7 +6,7 @@
 <li>在回放中. 需要根据  View Hierarchy  找到 回放操作 对应的控件.<a id="more"></a>
 </li>
 </ul>
-<h2 id="实现方式"><a href="#实现方式" class="headerlink" title="实现方式"></a>实现方式</h2><p><img src="http://upload-images.jianshu.io/upload_images/166866-893ca5a585c7e7d9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="实例1"></p>
+<h2 id="实现方式"><a href="#实现方式" class="headerlink" title="实现方式"></a>实现方式</h2><p><img src="/2017/12/24/sasuke_sdk_view_hierarchy/sdk_01.png" alt="实例1"></p>
 <h3 id="方式一-activity-onResume"><a href="#方式一-activity-onResume" class="headerlink" title="方式一: activity onResume"></a>方式一: activity onResume</h3><p>原理: ContentView 在 Activity 的onResume 里添加到屏幕上.<br>优点: 实现简单<br>缺点: 获取的视图不全面. 类似Dialog , PopWindow<br>在 实例1 中只能获取 Activity 层级, 领圣诞礼卷的对话框就获取不到了.</p>
 <h3 id="方式二-hook-LayoutInflater"><a href="#方式二-hook-LayoutInflater" class="headerlink" title="方式二: hook LayoutInflater"></a>方式二: hook LayoutInflater</h3><p>原理: res 的 layout  资源通过 LayoutInflater 解析成 View.<br>优点: 覆盖了所有从layout资源里面加载的控件<br>缺点: 系统兼容性问题, 能兼容 90% 以上的情况. </p>
 <h3 id="方式三-hook-WindowManager"><a href="#方式三-hook-WindowManager" class="headerlink" title="方式三: hook WindowManager"></a>方式三: hook WindowManager</h3><p>原理: 一个View 要显示在屏幕上, 都需要调用 WindowManager.add(XX) 方法.<br>优点: 覆盖了所有情况<br>缺点: 系统兼容性问题</p>

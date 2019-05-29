@@ -2,6 +2,55 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://dim.red/2017/12/14/wechat_notify_system/</loc>
+    
+    <lastmod>2019-05-29T03:53:17.544Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://dim.red/2017/12/24/sasuke_sdk_view_hierarchy/</loc>
+    
+    <lastmod>2019-05-29T03:50:48.064Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://dim.red/2018/01/25/gradle_transform_%20exploration/</loc>
+    
+    <lastmod>2019-05-29T03:50:06.811Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://dim.red/2018/11/03/gradle_configuration_exploration/</loc>
+    
+    <lastmod>2019-05-29T03:44:30.676Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://dim.red/2017/04/23/aspectj_aop/</loc>
+    
+    <lastmod>2019-05-29T03:41:40.076Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://dim.red/2015/11/12/android.support.design_bookmark/</loc>
+    
+    <lastmod>2019-05-29T03:38:49.492Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://dim.red/2015/01/10/gsonformat/</loc>
+    
+    <lastmod>2019-05-29T03:33:49.559Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://dim.red/2018/05/03/dylog_exploration/</loc>
     
     <lastmod>2019-05-29T03:23:12.736Z</lastmod>
@@ -58,27 +107,6 @@
   </url>
   
   <url>
-    <loc>http://dim.red/2015/11/12/android.support.design_bookmark/</loc>
-    
-    <lastmod>2018-11-17T17:57:40.306Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://dim.red/2018/01/25/gradle_transform_%20exploration/</loc>
-    
-    <lastmod>2018-11-06T16:54:02.793Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://dim.red/2018/11/03/gradle_configuration_exploration/</loc>
-    
-    <lastmod>2018-11-03T05:43:54.776Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://dim.red/2017/12/23/sasuke_sdk/</loc>
     
     <lastmod>2018-08-25T15:11:43.267Z</lastmod>
@@ -93,20 +121,6 @@
   </url>
   
   <url>
-    <loc>http://dim.red/2017/12/14/wechat_notify_system/</loc>
-    
-    <lastmod>2018-08-25T11:00:15.143Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://dim.red/2017/12/24/sasuke_sdk_view_hierarchy/</loc>
-    
-    <lastmod>2018-08-25T08:43:17.120Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://dim.red/2016/03/07/rv_lv_cmp/</loc>
     
     <lastmod>2018-08-25T08:43:17.089Z</lastmod>
@@ -117,13 +131,6 @@
     <loc>http://dim.red/2017/12/16/inovel_dynamic_proxy/</loc>
     
     <lastmod>2018-08-25T08:43:17.067Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://dim.red/2015/01/10/gsonformat/</loc>
-    
-    <lastmod>2018-08-25T08:43:17.058Z</lastmod>
     
   </url>
   
@@ -145,13 +152,6 @@
     <loc>http://dim.red/2017/12/04/aop/</loc>
     
     <lastmod>2018-08-25T08:43:16.992Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://dim.red/2017/04/23/aspectj_aop/</loc>
-    
-    <lastmod>2018-08-25T08:43:16.985Z</lastmod>
     
   </url>
   

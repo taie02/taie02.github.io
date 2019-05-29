@@ -3,7 +3,7 @@
 <h1 id="Configuration-状态"><a href="#Configuration-状态" class="headerlink" title="Configuration 状态"></a>Configuration 状态</h1><p>状态分为三个 UNRESOLVED（未解析），RESOLVED（解析成功）/ RESOLVED_WITH_FAILURES（解析失败）<br>从未解析到解析成功或解析失败主要涉及两个过程，一 解析依赖图，二 获取产物。</p>
 <h2 id="一-解析依赖图"><a href="#一-解析依赖图" class="headerlink" title="一 解析依赖图"></a>一 解析依赖图</h2><p>主要的功能是使用广度优先算法遍历解析依赖图。同时解决依赖图中相同依赖的版本冲突。</p>
 <h3 id="解析冲突策略"><a href="#解析冲突策略" class="headerlink" title="解析冲突策略"></a>解析冲突策略</h3><p>解决版本冲突方式主要使用 3 种策略：</p>
-<h4 id="1-版本优先："><a href="#1-版本优先：" class="headerlink" title="1 版本优先："></a>1 版本优先：</h4><p><code>LatestModuleConflictResolver</code><br>一个版本号版本被分为2两部分。<code>数字版本号</code>+<code>限定版本号</code>。<code>数字版本号</code>开始的数字的部分。剩下的为<code>限定版本号</code>在通常版本号分为<br><img src="https://upload-images.jianshu.io/upload_images/166866-82e5000c68d848d2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<h4 id="1-版本优先："><a href="#1-版本优先：" class="headerlink" title="1 版本优先："></a>1 版本优先：</h4><p><code>LatestModuleConflictResolver</code><br>一个版本号版本被分为2两部分。<code>数字版本号</code>+<code>限定版本号</code>。<code>数字版本号</code>开始的数字的部分。剩下的为<code>限定版本号</code>在通常版本号分为<br><img src="/2018/11/03/gradle_configuration_exploration/configuration_01.png" alt="image.png"></p>
 <p>eg：1.2.3-bate3，[1,2,3] 为<code>数字版本号</code>，[bate,3] 为 <code>限定版本号</code><br>比较原则</p>
 <ol>
 <li><code>数字版本号</code>比较大小，逐个比较数字部分，数字大的版本号大<br>eg： 1.2.3 &gt; 1.1.19 ，1.2.3.1 &gt; 1.2.3 </li>
