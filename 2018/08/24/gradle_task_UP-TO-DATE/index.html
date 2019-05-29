@@ -14,7 +14,7 @@
 <li>discoveredInputFilesChanges：比对 Task 中新增的 Input 变更 。</li>
 </ul>
 <h1 id="InputPropert"><a href="#InputPropert" class="headerlink" title="InputPropert"></a>InputPropert</h1><p>Map\&lt;String, Object&gt; 类型<br>来自注解 @Input 或API <code>Task.getInput.property</code>  和 <code>Task.getInput.propertys</code> 。</p>
-<p>@Input 可以被序列化和反序列化的类型。支持的类型有 基本类型，枚举，Serializable 和 Name 扩展类型。<br><img src="https://upload-images.jianshu.io/upload_images/166866-96d872ae45d60060.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"> </p>
+<p>@Input 可以被序列化和反序列化的类型。支持的类型有 基本类型，枚举，Serializable 和 Name 扩展类型。<br><img src="/2018/08/24/gradle_task_UP-TO-DATE/task_01.png" alt="image.png"> </p>
 <h1 id="InputFile"><a href="#InputFile" class="headerlink" title="InputFile"></a>InputFile</h1><p>文件类型<br>来自注解  @InputFile @@InputFiles @InputDirectory 或 API<br><code>Task.getInput.file</code>， <code>Task.getInput.files</code>，<code>Task.getInput.dir</code> </p>
 <h1 id="OutputFile"><a href="#OutputFile" class="headerlink" title="OutputFile"></a>OutputFile</h1><p>文件类型<br>来自注解 @OutputDirectory @OutputDirectories @OutputFile @OutputFiles 或 API <code>Task.getInput.dir</code>，<code>Task.getInput.dirs</code>，<code>Task.getInput.file</code>，<code>Task.getInput.files</code> </p>
 <p>文件的比较主要分为3种， </p>
@@ -32,8 +32,8 @@
 </ul>
 <p>@Nested 是自定义的类型。 是一组或者多组相关输入输出的集合。内部使用上面的注解来定义输入和输出。</p>
 <p>注：注解可以声明字段或者 get 方法。但是注解要生效一定要有对应的 get 方法。</p>
-<h1 id="0x01-1"><a href="#0x01-1" class="headerlink" title="0x01"></a>0x01</h1><p>Task 通过注解的方式定义输入和输出。<br>Gradle 中定义 Task 。<br><img src="https://upload-images.jianshu.io/upload_images/166866-943b0afc95a6700f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"><br>通过接受一个 Class 类型来声明一个 Task 。<br>Class\<task>  -&gt;  Class\&lt;Task_Decorated&gt;  -&gt; Task_Decorated </task></p>
-<p><img src="https://upload-images.jianshu.io/upload_images/166866-081ad9bc5cdd11b8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"><br> Class\<task> 会经过 ClassGenerator , TaskFactory,AnnotationProcessingTaskFactory 生成  Task_Decorated 对象。Task_Decorated 是对 Task 的扩展。</task></p>
+<h1 id="0x01-1"><a href="#0x01-1" class="headerlink" title="0x01"></a>0x01</h1><p>Task 通过注解的方式定义输入和输出。<br>Gradle 中定义 Task 。<br><img src="/2018/08/24/gradle_task_UP-TO-DATE/task_02.png" alt="image.png"><br>通过接受一个 Class 类型来声明一个 Task 。<br>Class\<task>  -&gt;  Class\&lt;Task_Decorated&gt;  -&gt; Task_Decorated </task></p>
+<p><img src="/2018/08/24/gradle_task_UP-TO-DATE/task_03.png" alt="image.png"><br> Class\<task> 会经过 ClassGenerator , TaskFactory,AnnotationProcessingTaskFactory 生成  Task_Decorated 对象。Task_Decorated 是对 Task 的扩展。</task></p>
 <ul>
 <li>ClassGenerator：使用 ASM 对原始的类进行分析，生成 Task 的子类 Task_Decorated，并且实现新的接口，增加新的方法和字段。使之具有扩展的能力。</li>
 <li>TaskFactory：主要设置 Task_Decorated 合适的实例化方法。(为Task 构造方法注入 Service 对象)</li>
