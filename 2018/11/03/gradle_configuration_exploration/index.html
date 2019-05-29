@@ -48,7 +48,7 @@
           - releaseRuntimeElements
 </code></pre><p>这是在Gradle 3.0 以上会出现的问题。 原因在于依赖是可以存在多个变种。在没有属性值匹配的时候会找到多个的产物。Gradle 会抛出异常。因为 Gradle 也不知道应该返回哪一个变种。这个时候需要对 <code>Configuration</code> 加上属性，来筛选出唯一的变种。<br>Gradle 支持属性值的转换。通过定义一些 <code>Transform</code>  提供一些属性转换规则。在属性匹配不上的时候，尝试组合一条最短的 <code>Transform</code> 路径， 进行转换匹配。 筛选出唯一的产物。关于属性匹配和 <code>Transform</code> 相关知识。这里就不展开聊，可以查看相关链接 Gradle Transform 初探 了解更多细节。</p>
 <h1 id="相关"><a href="#相关" class="headerlink" title="相关"></a>相关</h1><p><a href="https://docs.oracle.com/middleware/1212/core/MAVEN/maven_version.htm#MAVEN8855" target="_blank" rel="noopener">Understanding Maven Version Numbers</a><br><a href="https://dim.red/2018/01/25/gradle_transform_%20exploration/">Gradle Transform 初探</a></p>
-</div></article></div></main><footer><div class="paginator"><a href="/2018/11/18/android_reference_exploration/" class="prev">PREV</a><a href="/2018/08/24/gradle_task_UP-TO-DATE/" class="next">NEXT</a></div><div id="disqus_thread"></div><script src="/disqus.js"></script><script>var dsqjs = new DisqusJS({
+</div></article></div></main><footer><div class="paginator"><a href="/2018/11/18/android_reference_exploration/" class="prev">上一篇</a><a href="/2018/08/24/gradle_task_UP-TO-DATE/" class="next">下一篇</a></div><div id="disqus_thread"></div><script src="/disqus.js"></script><script>var dsqjs = new DisqusJS({
 shortname: 'dimredblog', 
 identifier: '2018/11/03/gradle_configuration_exploration/',
 url: 'http://dim.red/2018/11/03/gradle_configuration_exploration/', 
