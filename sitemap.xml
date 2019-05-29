@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://dim.red/about/index.html</loc>
+    
+    <lastmod>2019-05-29T03:57:05.613Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://dim.red/2017/12/14/wechat_notify_system/</loc>
     
     <lastmod>2019-05-29T03:53:17.544Z</lastmod>
@@ -159,13 +166,6 @@
     <loc>http://dim.red/2018/05/13/idea_by_modify/</loc>
     
     <lastmod>2018-08-25T08:43:16.979Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://dim.red/about/index.html</loc>
-    
-    <lastmod>2018-08-25T08:37:54.126Z</lastmod>
     
   </url>
   
