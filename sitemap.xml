@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://dim.red/2019/12/26/implementation_api_maven_gradle_metadata/</loc>
+    
+    <lastmod>2019-12-25T16:37:00.226Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://dim.red/about/index.html</loc>
     
     <lastmod>2019-05-29T03:57:05.613Z</lastmod>
