@@ -105,7 +105,7 @@
 <li>发布插件。Gradle 默认提供两种发布插件 maven 和 maven-publish 。 这个特性当前只存在 maven-publish。 android 默认情况下只支持 maven 。  </li>
 <li>依赖 classifier  丢失。<br>Maven 支持一个依赖存在多个 classifier。 Gradle Metadata 在写入的时候会丢失这部分信息。 这是当前使用唯一遇到的天坑，该错误在8月份被修复，mr <a href="https://github.com/gradle/gradle/issues/10189" target="_blank" rel="noopener">Publish classifier/artifact selection to GMM</a> 在  6.0 RC1 合入。 同时也被带入到 6.0 正式版本中。<br>更多 Gradle Metadata 细节查看  <a href="https://blog.gradle.org/gradle-metadata-1.0" target="_blank" rel="noopener">Introducing Gradle Module Metadata</a> 。</li>
 </ol>
-<p>国内网络上对于 Gradle Metadata 这块的几乎没有涉及。一个 feature 存在 4.10.2 甚至更早。在 5.3 正式发布了 1.0 但是国内这块的涉及几乎没有，这是非常可惜的。<br>尽管有这么多个缺陷。但是这个特性确实让人兴奋。 Gradle 提供的功能或多或少都存在一些 Bug。 我们只希望 Gradle 6.0 尽快到来。</p>
+<p>国内网络上对于 Gradle Metadata 这块的几乎没有涉及。一个 feature 存在 4.10.2 甚至更早。在 5.3 正式发布了 1.0。但是国内这块的涉及几乎没有，这是非常可惜的。<br>尽管有这么多个缺陷。但是这个特性确实让人兴奋。 Gradle 提供的功能或多或少都存在一些 Bug。 我们只希望 Gradle 6.0 尽快到来。</p>
 </div></article></div></main><footer><div class="paginator"><a href="/2019/03/03/scrcpy_usage/" class="next">NEXT</a></div><div id="disqus_thread"></div><script src="/disqus.js"></script><script>var dsqjs = new DisqusJS({
 shortname: 'dimredblog', 
 identifier: '2019/12/26/implementation_api_maven_gradle_metadata/',
