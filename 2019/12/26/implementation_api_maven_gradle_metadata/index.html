@@ -48,7 +48,7 @@
 <li>对于 api 依赖的  libsub1 发生变更，如果对 ABI 没有变更。 那么只有libsub1  javac task 重新编译。lib 和 app 的 javac task 使用上次的输出。</li>
 <li>对于 api 依赖的  libsub1 发生变更，如果对 ABI 发生变更。 那么无论如何 libsub1，lib ，app  javac task 都将重新编译。</li>
 </ol>
-<p>通过尽可能的让任务  UP-TO-DATE 让编译时长加。这里所有的优化的都是在增量编译的情况下生效。 </p>
+<p>通过尽可能的让任务  UP-TO-DATE 减少编译时长。这里所有的优化的都是在增量编译的情况下生效。 </p>
 <p>注：<br> ABI 化: 删除了所有私有的方法和字段。 同时删除了所有方法的方法体。具体可查看 AbiExtractingClasspathResourceHasher<br>ABI 变更：修改，新增，删除了 非私有 方法签名。修改或新增了非私有属性 等都将引起 ABI 变更。</p>
 <p><strong>2 javac  task classpath 的缩减。</strong><br>由于出现的 编译的 classpath 路径减少 ，让 javac 编译时查找对应类减少几次查找从而加快编译速度。 这一块的加速个人感官上是很轻微的。</p>
 <p>总结： implementation 和 api 并不会影响本工程的编译或运行。它只影响本工程对外提供的依赖列表。</p>
