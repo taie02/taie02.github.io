@@ -386,7 +386,7 @@
 <li>字节码 中 Attributes 属性的删除。（Obfuscate）</li>
 <li>名称的简化。（Obfuscate）</li>
 </ol>
-<p>ProGuard 是在 rule 规则上做优化。 rule 的范围越窄，那么优化的效果就越明显。我们尽可能的优化 rule 来达到最大化的优化的结果。除了在定义的时候特别注意范围。 同时可以优化 aapt_rule 来做更为极致的优化。aapt_rule 是由 aapt 工具在生成 arsc 资源时候生成 rule。 该 rule  是一个较为保守的方案。 它涵盖了所有 资源中可能出现的情况。 因为有些资源是在代码中永远不会被使用到。所以根据没有用到的资源生成的 rule 也是一个冗余的 rule 。通过以下情况了解一下具体情况。<br><img src="https://upload-images.jianshu.io/upload_images/166866-4473b4a3ec257667.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"><br>情况1：只有 app 代码。 通过 ProGuard 之后 jar 的大小 3 KB<br>情况2：有 app 代码，引入了<code>appcompat-v7:28.0.0</code> 依赖。 但是没有使用 v7 的代码或者资源， 通过  ProGuard 之后 jar 大小为 612 KB。<br>情况3：有 app 代码和 <code>appcompat-v7:28.0.0</code> 依赖，没有使用 v7 的代码或资源。 收敛了 aapt_rules 。  ProGuard 之后 jar 大小为 29 KB。之所以没有办法达到情况1  中 3 KB原因在于引入了 v7 的同时引入了 v7 的 aar_rules.</p>
+<p>ProGuard 是在 rule 规则上做优化。 rule 的范围越窄，那么优化的效果就越明显。我们尽可能的优化 rule 来达到最大化的优化的结果。除了在定义的时候特别注意范围。 同时可以优化 aapt_rule 来做更为极致的优化。aapt_rule 是由 aapt 工具在生成 arsc 资源时候生成 rule。 该 rule  是一个较为保守的方案。 它涵盖了所有 资源中可能出现的情况。 因为有些资源是在代码中永远不会被使用到。所以根据没有用到的资源生成的 rule 也是一个冗余的 rule 。通过以下情况了解一下具体情况。<br><img src="/2019/01/28/proguard_exploration/proguard_04.png" alt="image.png"><br>情况1：只有 app 代码。 通过 ProGuard 之后 jar 的大小 3 KB<br>情况2：有 app 代码，引入了<code>appcompat-v7:28.0.0</code> 依赖。 但是没有使用 v7 的代码或者资源， 通过  ProGuard 之后 jar 大小为 612 KB。<br>情况3：有 app 代码和 <code>appcompat-v7:28.0.0</code> 依赖，没有使用 v7 的代码或资源。 收敛了 aapt_rules 。  ProGuard 之后 jar 大小为 29 KB。之所以没有办法达到情况1  中 3 KB原因在于引入了 v7 的同时引入了 v7 的 aar_rules.</p>
 <p>注：  aapt_rules 收敛以后瘦身的效果还受到其他因素的影响。 </p>
 <h1 id="0x03-ProGuard-rule-优化建议"><a href="#0x03-ProGuard-rule-优化建议" class="headerlink" title="0x03 ProGuard rule 优化建议"></a>0x03 ProGuard rule 优化建议</h1><ol>
 <li>尽可能使用 keepnames 替代 keep</li>
