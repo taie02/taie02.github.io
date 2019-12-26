@@ -102,7 +102,7 @@
 <li>当前版本 .module 文件格式并不稳定，4.10.2 的版本为 0.4 。 6.0 的版本为1.1。 不同版本并不能兼容使用。</li>
 <li>内部 API  。如果要自定义这个特性。 需要继承 SoftwareComponentInternal 。 它位于 org.gradle.api.internal.component。 还未正式放出来。 即使是 6.0 也存在这个问题。对于 Android 就更为苛刻。</li>
 <li>发布插件。Gradle 默认提供两种发布插件 maven 和 maven-publish 。 这个特性当前只存在 maven-publish。 android 默认情况下只支持 maven 。  </li>
-<li>依赖 classifier  丢失。<br>Maven 支持一个依赖存在多个 classifier。 Gradle Metadata 在写入的时候会丢失这部分信息。 这是当前使用唯一遇到的天坑，该错误在8月份被修复，mr <a href="https://github.com/gradle/gradle/issues/10189" target="_blank" rel="noopener">Publish classifier/artifact selection to GMM</a> 在  6.0 RC1 合入。 同时也被带入到 6.0 正式版本中。</li>
+<li>依赖 classifier  丢失。<br>Maven 支持一个依赖存在多个 classifier。 Gradle Metadata 在写入的时候会丢失这部分信息。 这是当前使用唯一遇到的天坑，该错误在8月份被修复，mr <a href="https://github.com/gradle/gradle/issues/10189" target="_blank" rel="noopener">Publish classifier/artifact selection to GMM</a> 在  6.0 RC1 合入。 同时也被带入到 6.0 正式版本中。现阶段提供一个兼容方案。 不直接依赖存在 classifier 的依赖。依赖一个中间依赖。 中间依赖再依赖这个  classifier 的依赖。 中间依赖使用 pom 文件， 不使用 .module。用这种方案来规避 Metadata 序列化的 bug 。</li>
 <li>成本提高。<br>对依赖更细致的控制。学习成本变高，对于开发人员素质要求变高。<br>更多 Gradle Metadata 细节查看  <a href="https://blog.gradle.org/gradle-metadata-1.0" target="_blank" rel="noopener">Introducing Gradle Module Metadata</a> 。</li>
 </ol>
 <p>Gradle 觉得 Metadata 可以帮我们逃离依赖地狱。 或许可以或许通往另外一个地狱。</p>
