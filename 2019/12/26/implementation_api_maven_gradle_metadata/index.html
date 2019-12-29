@@ -106,6 +106,11 @@
 <li>成本提高。<br>对依赖更细致的控制。学习成本变高，对于开发人员素质要求变高。<br>更多 Gradle Metadata 细节查看  <a href="https://blog.gradle.org/gradle-metadata-1.0" target="_blank" rel="noopener">Introducing Gradle Module Metadata</a> 。</li>
 </ol>
 <p>Gradle 觉得 Metadata 可以帮我们逃离依赖地狱。 或许可以或许通往另外一个地狱。</p>
+<p>依赖地狱是指因为依赖大量的组件，过多的组件形成了复杂的依赖关系图。 虽然组件多个版本被引入。 但是最终只能选择一个版本。 这个版本不能兼容所有组件而引发的问题。</p>
+<p>Gradle 觉得是信息的不足导致 依赖地狱 的产生。Gradle 在 4.4 的时候支持对依赖版本声明进行更详情的配置。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">implementation(&apos;org.slf4j:slf4j-api&apos;) &#123;</span><br><span class="line">     version &#123;</span><br><span class="line">         strictly &apos;[1.0, 2.0[&apos;</span><br><span class="line">         prefer &apos;1.7&apos;</span><br><span class="line">         reject &apos;1.8&apos;</span><br><span class="line">     &#125;</span><br><span class="line"> &#125;</span><br><span class="line"> 支持 org.slf4j:slf4j-api  1.0 到 2.0 不包含1.8 的版本 。 默认情况选择 1.7 。</span><br></pre></td></tr></table></figure>
+<p>配置更多查看 <a href="https://docs.gradle.org/6.0/userguide/rich_versions.html" target="_blank" rel="noopener">Declaring Rich Versions</a></p>
+<p>但是这一块版本配置或约束在发布成 Maven 的时候就丢失了。Gradle 希望通过 Metadata 保留这块配置。使 Gralde 在依赖版本冲突的时候有更多的信息去选择版本。尽可能避免依赖地狱。</p>
 <h1 id="0x06-总结"><a href="#0x06-总结" class="headerlink" title="0x06 总结"></a>0x06 总结</h1><p>国内网络上对于 Gradle Metadata 这块的几乎没有涉及。一个 feature 存在 4.10.2 甚至更早。在 5.3 正式发布了 1.0 版本。但是国内这块的涉及几乎没有，这是非常可惜的。</p>
 <p>Gradle 提供的功能或多或少都存在一些 Bug，尽管有这么多个缺陷。但是这个特性确实让人兴奋。 我们只希望 Gradle 6.0 尽快到来。</p>
 </div></article></div></main><footer><div class="paginator"><a href="/2019/03/03/scrcpy_usage/" class="next">NEXT</a></div><div id="disqus_thread"></div><script src="/disqus.js"></script><script>var dsqjs = new DisqusJS({
