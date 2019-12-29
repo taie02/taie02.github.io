@@ -13,7 +13,7 @@
 <h2 id="三-支持增量："><a href="#三-支持增量：" class="headerlink" title="三 支持增量："></a>三 支持增量：</h2><p>我们几乎所有的Transform 都支持了增量编译，意思是AspectJ 并不会每次都处理所有的class， 他只会处理有变更的class 文件。 除非是你的aspectpath文件出现了变更，即AOP规则变更了, 之前的处理结果已经不可靠了，就会触发一次全量的处理。<br>为了支持这个特性，我们必须手动的为AspectJ 新增一个参数  <code>-infiles</code>。为了这个特性我们必须去修改aspectJ 的源码。修改以下3个类 <code>org.aspectj.ajdt.internal.core.builder.AjBuildManager</code>和<code>org.aspectj.ajdt.internal.core.builder.AjBuildConfig</code> 和<code>org.aspectj.ajdt.ajc.BuildArgParser</code>， 这个特性在持续开发中对于节省时间特别有效。</p>
 <p>因为在一些需求我们需要修改AspectJ的代码，因为AspectJ 的源码编译比较麻烦。我们这里使用修改后的java编译出的class 文件，然后直接覆盖AspectJ jar包中对应的文件上。</p>
 <h1 id="结尾"><a href="#结尾" class="headerlink" title="结尾:"></a>结尾:</h1><p>我们将所有的代码放置在github 上 <a href="https://github.com/zzz40500/AspectJAOP" target="_blank" rel="noopener">AspectJAOP</a>。</p>
-</div></article></div></main><footer><div class="paginator"><a href="/2017/12/04/aop/" class="prev">PREV</a><a href="/2017/04/05/android_plugin_transform_ exploration/" class="next">NEXT</a></div><div id="disqus_thread"></div><script src="/disqus.js"></script><script>var dsqjs = new DisqusJS({
+</div></article></div></main><footer><div class="paginator"><a href="/2017/12/04/aop/" class="prev">上一篇</a><a href="/2017/04/05/android_plugin_transform_ exploration/" class="next">下一篇</a></div><div id="disqus_thread"></div><script src="/disqus.js"></script><script>var dsqjs = new DisqusJS({
 shortname: 'dimredblog', 
 identifier: '2017/04/23/aspectj_aop/',
 url: 'http://dim.red/2017/04/23/aspectj_aop/', 
