@@ -1,7 +1,7 @@
 <!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> Android R8 · dim's blog</title><meta name="description" content="Android R8 - Dim"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="stylesheet" href="/css/disqusjs.css"><link rel="search" type="application/opensearchdescription+xml" href="http://dim.red/atom.xml" title="dim's blog"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">博客</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">文章</a></li><li class="nav-list-item"><a href="/about/" target="_self" class="nav-list-link">关于</a></li><li class="nav-list-item"><a href="/atom.xml" target="_self" class="nav-list-link">RSS</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">Android R8</h1><div class="post-info">Mar 31, 2020</div><div class="post-content"><p>版本：1.4.94<br>地址：<a href="https://r8.googlesource.com/r8/+/refs/tags/1.4.96" target="_blank" rel="noopener">r8 </a></p>
 <h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>r8包含了D8 的功能， 实现了对 java 字节码优化，混淆并转换成 dex 文件的功能。 可以很好的替代了 ProGuard 的在 Android 编译工具链上的应用。 同时生成的 dex 文件更为轻小。 </p>
 <p>r8 主要分为 5 个阶段: Read Input，Configuration，Shrink ，Optimize，Write Dex<br>代码入口 com.android.tools.r8.R8<br><a id="more"></a></p>
-<h2 id="Read-Inputs"><a href="#Read-Inputs" class="headerlink" title="Read Inputs"></a>Read Inputs</h2><p>相对于 ProGuard 只支持对  class 文件的解析 。<br>r8 支持对 dex 和 class 文件的解析。 class 文件使用 ASM 框架进行解析。dex  文件直接采用操作 2 进制的方案进行解析。 dex 版本支持 v35 (android 2-5) v37 (android 6-7)  v38 (android 8) v39(android 9)。</p>
+<h2 id="Read-Inputs"><a href="#Read-Inputs" class="headerlink" title="Read Inputs"></a>Read Inputs</h2><p>相对于 ProGuard 只支持对  class 文件的解析 。<br>r8 支持对 dex 和 class 文件的解析。 class 文件使用 ASM 框架进行解析。dex  文件直接操作 2 进制的方案进行解析。 dex 版本支持 v35 (android 2-5) v37 (android 6-7)  v38 (android 8) v39(android 9)。</p>
 <p>dex 生成的版本取决 app 的 minSdkVersion。dex 之所以存在多个版本。 </p>
 <ol>
 <li>dex 在新的版本中引入了新的字节码。  </li>
@@ -10,7 +10,7 @@
 <p>相关字节码列表可以查看链接 <a href="https://source.android.com/devices/tech/dalvik/dalvik-bytecode#instructions" target="_blank" rel="noopener">dalvik-bytecode#instructions</a>。</p>
 <h2 id="Configuration"><a href="#Configuration" class="headerlink" title="Configuration"></a>Configuration</h2><p>工具的运行少不了配置的使用。为了能平滑的替换 ProGuard 的功能。 r8 兼容大部分的 ProGuard rule 。同时扩展了 rule 定义。<br>支持的主要有 keep，if，repackageclasses，flattenpackagehierarchy，overloadaggressively，allowaccessmodification，basedirectory，obfuscationdictionary，classobfuscationdictionary，packageobfuscationdictionary，useuniqueclassmembernames，keepdirectories，renamesourcefileattribute，keepattributes，keeppackagenames，keepparameternames，printconfiguration，printmapping，applymapping，printseeds…<br>r8 不支持大部分的优化配置。 但是 新增了新的 rule 来扩展之前的优化功能。<br>forceinline，neverinline，neverclassinline，nevermerge</p>
 <p>这里对 rule 的含义不做过多解释。 可以查看 ProGuard 官方文档 <a href="https://www.guardsquare.com/en/products/proguard/manual/usage" target="_blank" rel="noopener">ProGuard usage</a> 或查看之前的文章 <a href="https://dim.red/2019/01/28/proguard_exploration/">ProGuard 初探</a></p>
-<h2 id="Shrink"><a href="#Shrink" class="headerlink" title="Shrink"></a>Shrink</h2><p>移除未被使用的类、字段、方法和属性。这里和 ProGuard 一样不会对方法签名或指令进行裁剪。<br>在处理方法的时候， 需要注意这几个</p>
+<h2 id="Shrink"><a href="#Shrink" class="headerlink" title="Shrink"></a>Shrink</h2><p>移除未被使用的类、字段、方法和属性。这里和 ProGuard 一样不会对方法签名或指令进行裁剪。<br>在处理方法的时候， 需要注意以下几个</p>
 <ol>
 <li><p>Kotlin 的反射<br>Kotlin 的反射是基于解析注解实现的。Kotlin 经过 kotlinc 生成的 class 文件包含一个注解 @kotlin.Metadata。 由编译器生成， 记录 Kotlin 源文件的基本信息。Kotlin 运行时使用 ReadKotlinClassHeaderAnnotationVisitor 对 @kotlin.Metadata 注解进行解析。 所以 Kotlin 反射非常慢。在处理 Kotlin 在混淆和裁剪的时候。 需同步修改 @kotlin.Metadata 里面的定义。r8 在这里使用 Kotlin 的官方库 kotlinx-metadata-jvm 操作 @kotlin.Metadata 元素。 </p>
 </li>
@@ -19,9 +19,9 @@
 <li><p>关于 java 反射<br>r8 对于反射是在最近几个版本支持的， 支持以下 api<br>AtomicIntegerFieldUpdater.newUpdater<br>AtomicLongFieldUpdater.newUpdater<br>AtomicReferenceFieldUpdater.newUpdater<br>Class.forName<br>SomeClass.getName<br>SomeClass.getCanonicalName<br>SomeClass.getSimpleName<br>SomeClass.getTypeName<br>SomeClass.getField<br>SomeClass.getDeclaredField<br>SomeClass.getMethod<br>SomeClass.getDeclaredMethod<br>相比于 ProGuard 使用模板匹配的方式。 r8 将代码转成 中间表现 IR 通过 SSA 的方式对代码进行分析。因为使用代码分析所以 r8 跟踪反射功能的适应性比  ProGuard 好。在反射优化中 r8 和 ProGuard 对于构造方法均只能识别无参构造方法， 对于其他的构造方法在这都是无能为力。</p>
 </li>
 <li>r8 部分支持对 ServiceLoader 机制。<br>ServiceLoader JSP（Service Provider Interfaces）。 ServiceLoader 的实现有两种版本。 一种是在 JDK 9 以下。 通过定义一个接口。同时将继承该接口的实现类将记录在META-INF/services 接口同名文件下。第二种是在 JDK 9 上面用于支持 java9 模块化下不同模块的通信。 实现类信息记录在 module-info.java 下。 对于 r8 只处理第一种实现。r8 会保留用到的services，并保留他们的无参构造函数。 java9 暂不在 r8 的支持范围内。 </li>
-<li><p>r8 可以删除可见的桥接方法<br>当允许修改访问权限，可见的桥接方法将被删除。<br><a href="https://bugs.java.com/bugdatabase/view_bug.do?bug_id=6342411" target="_blank" rel="noopener">https://bugs.java.com/bugdatabase/view_bug.do?bug_id=6342411</a><br>可见的桥接方法是为了解决 public class 继承了一个私有类的时。 反射调用存在该类父类的 public 方法出现的 IllegalAccessException 错误。<br>我们只要修改父类为 public 就能安全的删除桥接方法而不会有任何的影响。</p>
+<li><p>r8 可以删除可见的桥接方法<br>当允许修改访问权限，可见的桥接方法将被删除。<br><a href="https://bugs.java.com/bugdatabase/view_bug.do?bug_id=6342411" target="_blank" rel="noopener">https://bugs.java.com/bugdatabase/view_bug.do?bug_id=6342411</a><br>可见的桥接方法是为了解决 public class 继承了一个私有类时。 反射调用存在该类父类的 public 方法出现的 IllegalAccessException 错误。<br>我们只要修改父类为 public 就能安全的删除桥接方法而不会有任何的影响。</p>
 </li>
-<li><p>r8 的 Shrink 规则和 ProGuard 相同。 首先计算所有 keep rule 定义的根节点。 从这些根节点发散出去。<br>对于 Externalizable 和 Serializable 需要额外的处理。  Externalizable 需要保留无参构造方法。 Externalizable 存在两个方法 readExternal 和 writeExternal 用来自定义序列化中的操作。 r8 默认会把这两个方法干掉。  ProGuard 则会将它保留。 原因是 r8 认为 readExternal 和 writeExternal 没有被调用过。而ProGuard 认为你继承了 Externalizable 那么你就有义务保留它的重写方法。</p>
+<li><p>r8 的 Shrink 规则和 ProGuard 相同。 首先计算所有 keep rule 定义的根节点。 从这些根节点发散出去。<br>对于 Externalizable 和 Serializable 需要额外的处理。  Externalizable 需要保留无参构造方法。 Externalizable 存在两个方法 readExternal 和 writeExternal 用来自定义序列化中的操作。 r8 默认会把这两个方法干掉。  ProGuard 则会将它保留。 原因是 r8 认为 readExternal 和 writeExternal 没有被调用过。而 ProGuard 认为你继承了 Externalizable 那么你就有义务保留它的重写方法。</p>
 </li>
 </ol>
 <h4 id="ProGuard-和-r8-对比"><a href="#ProGuard-和-r8-对比" class="headerlink" title="ProGuard 和 r8 对比"></a>ProGuard 和 r8 对比</h4><ol>
@@ -40,7 +40,7 @@
 </ol>
 <p>优化项</p>
 <ol>
-<li>优化 Stringbuilder </li>
+<li>优化 StringBuilder </li>
 <li>优化 String  指令</li>
 <li>简化 if 指令。 </li>
 <li>清理桥接方法。</li>
@@ -58,14 +58,14 @@
 <li>…</li>
 </ol>
 <p>这一块的代码是基于老版本的分析。后续会有更为详细的分析。<br>— 待续 —</p>
-<h2 id="Obfuscate"><a href="#Obfuscate" class="headerlink" title="Obfuscate"></a>Obfuscate</h2><p>混淆跟 ProGuard 类似。 支持字典的自定义。 不同是 r8 在开启保留签名（Signature）会保留内部类的类名的时候同时会保留外部类的类名，使两个类类名保持内外类的命名关系。<br>r8 在这原来的基础上支持对行号进行优化。尽可能把所有方法的开始行号映射为1 。<br>mapping 文件变为<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2:2:android.arch.core.internal.SafeIterableMap$Entry get(java.lang.Object):45:45 -&gt; a</span><br></pre></td></tr></table></figure></p>
+<h2 id="Obfuscate"><a href="#Obfuscate" class="headerlink" title="Obfuscate"></a>Obfuscate</h2><p>混淆跟 ProGuard 类似。 支持字典的自定义。 不同是 r8 在开启保留签名（Signature）会保留内部类的类名的时候同时会保留外部类的类名，使两个类类名保持内外类的命名关系。<br>r8 在这原来的基础上支持对行号进行优化。尽可能把所有方法的开始行号映射为1 。只所以是尽可能。 只所以是尽可能，而不是全部，因为涉及到堆栈反解的问题。<br>mapping 信息变为<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2:2:android.arch.core.internal.SafeIterableMap$Entry get(java.lang.Object):45:45 -&gt; a</span><br></pre></td></tr></table></figure></p>
 <p>前面为映射后行号， 后面为源码中行号。</p>
-<p>优化行号的好处在于可以合并相同的 debug_info_item。这个方案有点类似于之前的支付宝瘦身。 但是合并效率当然会有不如。</p>
+<p>优化行号的好处在于可以合并相同的 debug_info_item。这个方案有点类似于之前的支付宝瘦身。 但合并效率当然会有不如。</p>
 <h2 id="r8-其他使用。"><a href="#r8-其他使用。" class="headerlink" title="r8 其他使用。"></a>r8 其他使用。</h2><p>ProGuard 在 Android 工具链上的应用不仅仅用在代码优化混淆上。同时也用在 mainDexList 的计算。 r8 同样支持对 mainDexList 计算。甚至 mainDexList 文件可以不落地。 但是 r8 计算的 mainDexList 列表会比 ProGuard 计算出来的还多。 因为它不仅保留了所有代码入口发散出去的类，以及他们的直接引用。r8 还保留了所有的带枚举的注解。以及被这该注解标记的类。</p>
 <p>至此 r8 已经能接管所有 ProGuard 的功能。<br><img src="/2020/03/31/android_r8/r8_01.png" alt="proguard"></p>
 <p><img src="/2020/03/31/android_r8/r8_02.png" alt="r8"></p>
-<p>java 编译到 dex 的过程中。还有一个 javac 这一个非 Google 的工具链。 或许后续可能会升级 javac 用以对 dex 的支持。 </p>
-<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>r8 已经足够的出色了。但是过于苛刻的保留规则导致之前规则并不能无条件的适应。当前输出只支持 Dex 。 导致该工具不能应用在其他的 java 项目上。较为可惜。</p>
+<p>java 编译到 dex 的过程中。还有一个 javac 这一个非 Google 的工具链。 或许后续可能会升级 javac 用以对 dex api 的支持。 </p>
+<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>r8 已经足够的出色了。但是过于苛刻的保留规则导致之前规则并不能无条件的适应。较为可惜的是当前输出只支持 Dex 。导致该工具不能应用在其他的 java 项目上。r8 的发展还是很迅速的。反射的支持和 ProGuard 相关参数的支持都相当迅速。 现阶段已经来到 2.1 的版本。是时候从 ProGuard 切换到 r8 上。</p>
 </div></article></div></main><footer><div class="paginator"><a href="/2019/12/26/implementation_api_maven_gradle_metadata/" class="next">NEXT</a></div><div id="disqus_thread"></div><script src="/disqus.js"></script><script>var dsqjs = new DisqusJS({
 shortname: 'dimredblog', 
 identifier: '2020/03/31/android_r8/',
