@@ -57,7 +57,7 @@
 <li>new-array 指令转换 fill-array-data / filled-new-array 节省 字节指令。</li>
 <li>…</li>
 </ol>
-<p>这一块的代码是基于老版本的分析。 很久以前的分析。故只列出当时的笔记。后续会有更为详细的分析。<br>— 待续 —</p>
+<p>这一块的代码是基于老版本的分析。后续会有更为详细的分析。<br>— 待续 —</p>
 <h2 id="Obfuscate"><a href="#Obfuscate" class="headerlink" title="Obfuscate"></a>Obfuscate</h2><p>混淆跟 ProGuard 类似。 支持字典的自定义。 不同是 r8 在开启保留签名（Signature）会保留内部类的类名的时候同时会保留外部类的类名，使两个类类名保持内外类的命名关系。<br>r8 在这原来的基础上支持对行号进行优化。尽可能把所有方法的开始行号映射为1 。<br>mapping 文件变为<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2:2:android.arch.core.internal.SafeIterableMap$Entry get(java.lang.Object):45:45 -&gt; a</span><br></pre></td></tr></table></figure></p>
 <p>前面为映射后行号， 后面为源码中行号。</p>
 <p>优化行号的好处在于可以合并相同的 debug_info_item。这个方案有点类似于之前的支付宝瘦身。 但是合并效率当然会有不如。</p>
