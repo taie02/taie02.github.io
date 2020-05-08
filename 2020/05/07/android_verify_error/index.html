@@ -40,11 +40,11 @@
 </li>
 <li><p>第七步<br>由于 000e 的 insn_flags 还是 Changed。还需要校验指令 000e 指令<br>校验指令 000e: move-object v0, v4<br>0x00e - 0x0018 是位于 try catch 里面的指令。 try catch 里所有可能发生异常的指令。都会走到 catch 的处理逻辑中。 所以需要把进入该指令前的寄存器注册表状态转移到 0x001a 中。进入前的寄存器注册表保存在 saved_line_ 变量上。理论上 move-object 指令是不会发生异常的。 但是 api 22 存在的一个 bug 。 由于第六步的异常导致所有的指令都强制设置为会发生异常。  导致 art 错误的把一个未赋值的 saved_line_  寄存器注册表赋值给 0x001a ，同时设置 0x001a  的 insn_flags 设置为 Changed   。<br>执行指令是否会发生异常查看 <a href="https://android.googlesource.com/platform/art/+/refs/tags/android-cts-5.1_r9/runtime/dex_instruction_list.h" target="_blank" rel="noopener">dex_instruction_list.h</a>  kThrow </p>
 </li>
-<li><p>第八步<br>检验 001a: return v1。 检验寄存器1是否匹配<br>由于当前寄存器注册表未赋值为 xxxxx<br>校验失败。结束校验。抛出异常</p>
+<li><p>第八步<br>检验 001a: return v1。 检验寄存器1<br>由于当前寄存器注册表未赋值为 xxxxx<br>校验失败。结束校验。抛出异常</p>
 </li>
 </ol>
 <p>异常现场复现。</p>
-<h1 id="0x03-总结"><a href="#0x03-总结" class="headerlink" title="0x03 总结"></a>0x03 总结</h1><h4 id="Bug-如何出现-？"><a href="#Bug-如何出现-？" class="headerlink" title="Bug 如何出现 ？"></a>Bug 如何出现 ？</h4><p>这个 Bug 是一套组合。 </p>
+<h1 id="0x03-总结"><a href="#0x03-总结" class="headerlink" title="0x03 总结"></a>0x03 总结</h1><h4 id="Bug-如何出现-？"><a href="#Bug-如何出现-？" class="headerlink" title="Bug 如何出现 ？"></a>Bug 如何出现 ？</h4><p>这个 Bug 是一套组合拼凑起来的。 </p>
 <ol>
 <li>一个运行期异常。</li>
 <li>紧跟一个 try catch 代码块</li>
